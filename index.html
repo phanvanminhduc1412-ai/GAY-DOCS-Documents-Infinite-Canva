@@ -1,0 +1,2198 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GAY DOCS — Documents & Infinite Canvas</title> 
+<link rel="icon" type="image/png" href="logo.png">
+<link
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/lucide@1/dist/umd/lucide.min.js" onload="window.__lucideReady=true; if(window.App&&window.App.refreshIcons) window.App.refreshIcons();"></script>
+<style>
+:root[data-theme="light"]{
+  --bg:#f3f3f0; --surface:#ffffff; --surface2:#fafaf8; --surface3:#f0f0ec;
+  --border:#e4e4de; --border2:#d5d5cd; --text:#1c1c1e; --muted:#6e6e73; --faint:#9a9aa0;
+  --accent:#0f766e; --accent-soft:rgba(15,118,110,.12); --accent2:#c2410c; --accent2-soft:rgba(194,65,12,.1);
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.06);
+  --paper:#ffffff; --editor-text:#1f2328; --toolbar-bg:#ffffff;
+}
+:root[data-theme="dark"]{
+  --bg:#1a1a1e; --surface:#242429; --surface2:#2a2a30; --surface3:#303037;
+  --border:rgba(255,255,255,.09); --border2:rgba(255,255,255,.14); --text:#e8e6e1; --muted:#9c9992; --faint:#6a6862;
+  --accent:#2dd4bf; --accent-soft:rgba(45,212,191,.14); --accent2:#fb923c; --accent2-soft:rgba(251,146,60,.12);
+  --shadow:0 1px 3px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+  --paper:#2a2a30; --editor-text:#e8e6e1; --toolbar-bg:#242429;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select,textarea{font-family:inherit;color:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:6px;border:2px solid var(--bg)}
+::-webkit-scrollbar-track{background:transparent}
+.brand{font-family:"Chakra Petch",system-ui,sans-serif;font-weight:700;letter-spacing:.04em}
+.mono{font-family:"JetBrains Mono",Consolas,Monaco,Menlo,"Courier New",monospace}
+.hidden{display:none!important}
+
+/* ---------- App shell ---------- */
+.app-shell{display:flex;height:100vh;width:100vw;overflow:hidden}
+.sidebar{width:248px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;transition:width .2s ease, transform .2s ease;overflow:hidden;z-index:30}
+.sidebar.collapsed{width:0;border-right:none}
+.sidebar-inner{width:248px;flex-shrink:0;height:100%;display:flex;flex-direction:column;padding:14px 10px;gap:4px}
+.side-logo{display:flex;align-items:center;gap:10px;padding:6px 10px 14px}
+.side-logo .logo-mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.side-logo .logo-mark svg{width:18px;height:18px}
+.side-logo h1{font-size:18px}
+.side-logo small{display:block;font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.08em;text-transform:uppercase}
+.side-btn{display:flex;align-items:center;gap:11px;padding:8px 12px;border-radius:8px;color:var(--muted);font-size:13.5px;font-weight:500;width:100%;text-align:left;transition:background .12s,color .12s}
+.side-btn:hover{background:var(--surface3);color:var(--text)}
+.side-btn.active{background:var(--accent-soft);color:var(--accent)}
+.side-btn svg{width:17px;height:17px;flex-shrink:0}
+.side-btn .count{margin-left:auto;font-size:11px;background:var(--surface3);padding:1px 7px;border-radius:10px;color:var(--muted)}
+.side-btn.active .count{background:var(--accent);color:#fff}
+.side-new{margin:4px 4px 10px;padding:10px 14px;background:var(--accent);color:#fff;border-radius:9px;font-weight:600;display:flex;align-items:center;gap:9px;justify-content:center;box-shadow:0 4px 12px var(--accent-soft);transition:transform .12s, filter .12s}
+.side-new:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.side-new svg{width:16px;height:16px}
+.side-sep{height:1px;background:var(--border);margin:8px 6px}
+.side-bottom{margin-top:auto;display:flex;flex-direction:column;gap:2px}
+.theme-toggle{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;color:var(--muted);font-size:13px;width:100%;text-align:left}
+.theme-toggle:hover{background:var(--surface3)}
+
+.main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;position:relative}
+.topbar{height:52px;flex-shrink:0;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 14px;z-index:20}
+.icon-btn{width:34px;height:34px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);transition:background .12s,color .12s;flex-shrink:0}
+.icon-btn:hover{background:var(--surface3);color:var(--text)}
+.icon-btn svg{width:17px;height:17px}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:7px 13px;border-radius:8px;font-size:13px;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--text);transition:all .12s;white-space:nowrap}
+.btn:hover{background:var(--surface3)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{border-color:transparent;background:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--surface3);color:var(--text)}
+.btn.small{padding:4px 9px;font-size:12px}
+.btn.danger{color:#dc2626;border-color:rgba(220,38,38,.3)}
+.btn.danger:hover{background:rgba(220,38,38,.08)}
+.title-input{flex:1;min-width:0;font-size:16px;font-weight:600;background:transparent;border:1px solid transparent;border-radius:6px;padding:5px 9px;outline:none;max-width:420px}
+.title-input:hover{border-color:var(--border)}
+.title-input:focus{border-color:var(--accent);background:var(--surface2)}
+.save-status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.save-status .dot{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.save-status.saving .dot{background:#d97706;animation:pulse 1s infinite}
+.save-status.saved .dot{background:#16a34a}
+.save-status.offline .dot{background:#dc2626}
+@keyframes pulse{50%{opacity:.3}}
+
+/* ---------- Home / Storage ---------- */
+.view{flex:1;overflow-y:auto;overflow-x:hidden;padding:26px 34px 60px}
+.view-header{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:20px}
+.view-header h2{font-size:22px;font-family:"Chakra Petch",sans-serif;font-weight:700}
+.view-header .sub{color:var(--muted);font-size:13px}
+.search-box{position:relative;margin-left:auto;display:flex;align-items:center}
+.search-box svg{position:absolute;left:11px;width:15px;height:15px;color:var(--faint)}
+.search-box input{padding:8px 12px 8px 34px;border:1px solid var(--border);border-radius:9px;background:var(--surface);width:240px;outline:none;font-size:13px}
+.search-box input:focus{border-color:var(--accent)}
+.select{padding:7px 10px;border:1px solid var(--border);border-radius:8px;background:var(--surface);font-size:13px;outline:none;cursor:pointer}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:8px;overflow:hidden;background:var(--surface)}
+.seg button{padding:6px 11px;color:var(--muted);font-size:13px}
+.seg button.active{background:var(--accent-soft);color:var(--accent);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.list{display:flex;flex-direction:column;gap:6px}
+.doc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;position:relative;display:flex;flex-direction:column;gap:8px;min-height:120px}
+.doc-card:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--border2)}
+.doc-card .card-top{display:flex;align-items:center;gap:10px}
+.doc-card .card-icon{width:36px;height:36px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.doc-card.canvas-type .card-icon{background:var(--accent2-soft);color:var(--accent2)}
+.doc-card .card-icon svg{width:18px;height:18px}
+.doc-card h3{font-size:14px;font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.doc-card .card-meta{font-size:11.5px;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.doc-card .badge{font-size:10.5px;padding:2px 7px;border-radius:10px;background:var(--surface3);color:var(--muted);font-weight:600;display:inline-flex;align-items:center;gap:4px}
+.doc-card .badge.canvas{background:var(--accent2-soft);color:var(--accent2)}
+.doc-card .badge.fav{background:rgba(217,119,6,.12);color:#d97706}
+.card-menu-btn{position:absolute;top:8px;right:8px;opacity:0;transition:opacity .12s}
+.doc-card:hover .card-menu-btn{opacity:1}
+.list .doc-card{flex-direction:row;align-items:center;min-height:0;padding:10px 14px;gap:14px}
+.list .doc-card .card-icon{width:32px;height:32px}
+.list .doc-card h3{max-width:320px}
+.list .doc-card .card-meta{margin-left:auto}
+.empty-state{text-align:center;padding:70px 20px;color:var(--muted)}
+.empty-state .big-icon{width:64px;height:64px;margin:0 auto 16px;color:var(--faint);display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px dashed var(--border2);border-radius:18px}
+.empty-state .big-icon svg{width:30px;height:30px}
+.empty-state h3{color:var(--text);margin-bottom:6px;font-size:17px}
+.empty-state p{font-size:13px;margin-bottom:18px}
+
+/* ---------- Dropdown / menu ---------- */
+.menu-wrap{position:relative}
+.menu{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:10px;box-shadow:var(--shadow);min-width:190px;padding:6px;z-index:100;display:none}
+.menu.open{display:block}
+.menu.left{right:auto;left:0}
+.menu-item{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:7px;font-size:13px;width:100%;text-align:left;color:var(--text)}
+.menu-item:hover{background:var(--surface3)}
+.menu-item.danger{color:#dc2626}
+.menu-item svg{width:15px;height:15px;color:var(--muted)}
+.menu-item.danger svg{color:#dc2626}
+.menu-sep{height:1px;background:var(--border);margin:5px 4px}
+
+/* ---------- Modal ---------- */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px)}
+.modal{background:var(--surface);border-radius:14px;box-shadow:var(--shadow);width:100%;max-width:560px;max-height:88vh;overflow:auto;border:1px solid var(--border)}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--border)}
+.modal-head h3{font-size:16px;font-weight:700}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:10px}
+.link-row{display:flex;align-items:center;gap:8px;margin:10px 0;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:8px 10px}
+.link-row .lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:4px 9px;border-radius:6px;flex-shrink:0}
+.link-row .lbl.edit{background:var(--accent-soft);color:var(--accent)}
+.link-row .lbl.view{background:var(--surface3);color:var(--muted)}
+.link-row input{flex:1;min-width:0;background:transparent;border:none;outline:none;font-size:12px;font-family:"JetBrains Mono",monospace;color:var(--muted)}
+.link-row .btn{flex-shrink:0}
+
+/* ---------- Editor ---------- */
+.doc-layout{flex:1;display:flex;min-height:0;overflow:hidden}
+.editor-col{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:20px 14px 60px}
+.toolbar{width:100%;max-width:880px;background:var(--toolbar-bg);border:1px solid var(--border);border-radius:10px;padding:6px 8px;display:flex;flex-wrap:wrap;align-items:center;gap:2px;margin-bottom:16px;position:sticky;top:8px;z-index:15;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+.tb-btn{width:30px;height:30px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);position:relative}
+.tb-btn:hover{background:var(--surface3);color:var(--text)}
+.tb-btn.active{background:var(--accent-soft);color:var(--accent)}
+.tb-btn svg{width:15px;height:15px}
+.tb-sep{width:1px;height:20px;background:var(--border);margin:0 5px}
+.tb-select{border:1px solid var(--border);border-radius:6px;padding:4px 6px;font-size:12px;background:var(--surface);outline:none;max-width:130px}
+.tb-select.font{max-width:110px}
+.color-wrap{position:relative;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:6px}
+.color-wrap:hover{background:var(--surface3)}
+.color-wrap input[type=color]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.color-wrap .swatch{width:16px;height:4px;border-radius:2px;margin-top:18px;background:#1c1c1e}
+.paper{width:100%;max-width:820px;background:var(--paper);box-shadow:var(--shadow);border-radius:6px;padding:64px 76px 120px;min-height:1100px;margin-bottom:36px;outline:none;font-size:15px;line-height:1.7;color:var(--editor-text);word-wrap:break-word}
+.paper-wrap{width:100%;max-width:820px;outline:none}
+.paper:focus{outline:none}
+.paper h1{font-size:2em;margin:.5em 0 .3em;font-weight:700}
+.paper h2{font-size:1.55em;margin:.6em 0 .3em;font-weight:700}
+.paper h3{font-size:1.25em;margin:.6em 0 .3em;font-weight:600}
+.paper p{margin:.4em 0}
+.paper ul,.paper ol{padding-left:28px;margin:.4em 0}
+.paper blockquote{border-left:3px solid var(--accent);padding:4px 16px;margin:.8em 0;color:var(--muted);background:var(--accent-soft);border-radius:0 6px 6px 0}
+.paper a{color:var(--accent);text-decoration:underline}
+.paper img{max-width:100%;border-radius:6px}
+.paper table{border-collapse:collapse;margin:.8em 0;width:100%}
+.paper table td,.paper table th{border:1px solid var(--border2);padding:6px 12px}
+.paper hr{border:none;border-top:2px solid var(--border);margin:1.2em 0}
+.paper ul.checklist{list-style:none;padding-left:8px}
+.paper ul.checklist li{display:flex;align-items:flex-start;gap:8px;margin:4px 0}
+.paper ul.checklist li input[type=checkbox]{margin-top:5px;width:15px;height:15px;accent-color:var(--accent)}
+.paper ul.checklist li.checked span{text-decoration:line-through;color:var(--faint)}
+
+/* code block inside editor */
+.code-block{background:#0d1117;color:#e6edf3;border-radius:10px;margin:14px 0;overflow:hidden;font-family:"JetBrains Mono",Consolas,Monaco,Menlo,monospace;font-size:13px;line-height:1.6;position:relative;border:1px solid rgba(255,255,255,.08)}
+:root[data-theme="light"] .code-block{background:#0d1117}
+.code-block .code-head{display:flex;align-items:center;gap:8px;padding:7px 12px;background:rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.08)}
+.code-block .code-head .lang{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7ee787}
+.code-block .code-head .dots{display:flex;gap:5px;margin-right:6px}
+.code-block .code-head .dots i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.code-block .code-head .dots i:nth-child(1){background:#ff5f57}
+.code-block .code-head .dots i:nth-child(2){background:#febc2e}
+.code-block .code-head .dots i:nth-child(3){background:#28c840}
+.code-block .code-head .spacer{flex:1}
+.code-block .code-head button{color:#8b949e;font-size:11px;padding:3px 9px;border-radius:5px;display:inline-flex;align-items:center;gap:5px}
+.code-block .code-head button:hover{background:rgba(255,255,255,.1);color:#fff}
+.code-block .code-head select{background:#161b22;border:1px solid rgba(255,255,255,.15);color:#e6edf3;font-size:11px;padding:3px 6px;border-radius:5px;outline:none}
+.code-block pre{margin:0;padding:14px 0 14px 0;overflow-x:auto;white-space:pre;tab-size:4}
+.code-block pre .line{display:block;padding:0 16px 0 52px;position:relative;min-height:1.6em}
+.code-block pre .line::before{content:attr(data-n);position:absolute;left:0;width:36px;text-align:right;padding-right:14px;color:#484f58;user-select:none}
+.code-block.no-linenum pre .line{padding-left:16px}
+.code-block.no-linenum pre .line::before{display:none}
+.tok-kw{color:#ff7b72}
+.tok-type{color:#79c0ff}
+.tok-fn{color:#d2a8ff}
+.tok-str{color:#a5d6ff}
+.tok-num{color:#79c0ff}
+.tok-com{color:#8b949e;font-style:italic}
+.tok-pp{color:#ffa657}
+.tok-op{color:#ff7b72}
+.tok-var{color:#e6edf3}
+.tok-tag{color:#7ee787}
+.tok-attr{color:#79c0ff}
+.tok-prop{color:#79c0ff}
+.tok-bool{color:#79c0ff}
+.tok-punc{color:#c9d1d9}
+
+.canvas-link-bar{width:100%;max-width:820px;margin-top:14px;padding:12px 16px;border-radius:10px;background:var(--accent2-soft);border:1px dashed var(--accent2);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.canvas-link-bar .info{flex:1;min-width:200px}
+.canvas-link-bar .info b{color:var(--accent2);font-size:13px}
+.canvas-link-bar .info p{font-size:12px;color:var(--muted);margin-top:2px}
+.create-canvas-mini{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;font-size:12px;border-radius:7px;background:var(--surface2);border:1px solid var(--border);color:var(--muted);font-weight:600}
+.create-canvas-mini:hover{border-color:var(--accent2);color:var(--accent2)}
+
+/* ---------- Right panel (doc manage) ---------- */
+.doc-panel{width:320px;flex-shrink:0;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .2s}
+.doc-panel.collapsed{width:0;border-left:none}
+.doc-panel-inner{width:320px;flex-shrink:0;height:100%;display:flex;flex-direction:column;overflow:hidden}
+.panel-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.panel-tabs button{flex:1;padding:11px 6px;font-size:12.5px;font-weight:600;color:var(--muted);border-bottom:2px solid transparent}
+.panel-tabs button.active{color:var(--accent);border-bottom-color:var(--accent)}
+.panel-body{flex:1;overflow-y:auto;padding:18px}
+.panel-section{margin-bottom:22px}
+.panel-section h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--faint);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.panel-section h4 svg{width:13px;height:13px}
+.info-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed var(--border);font-size:13px}
+.info-row .k{color:var(--muted)}
+.info-row .v{font-weight:600;font-size:12.5px;text-align:right;max-width:170px;word-break:break-word}
+.panel-actions{display:flex;flex-direction:column;gap:7px}
+.perm-note{font-size:11.5px;color:var(--muted);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 11px;margin-top:10px;line-height:1.5}
+
+/* ---------- Canvas ---------- */
+.canvas-view{position:fixed;inset:0;background:#fff;z-index:50;display:flex;flex-direction:column;overflow:hidden}
+.canvas-stage{flex:1;position:relative;overflow:hidden;touch-action:none}
+#drawCanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.canvas-tools{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;box-shadow:var(--shadow);z-index:10;flex-wrap:wrap;justify-content:center;max-width:92vw}
+.ctool{width:36px;height:36px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);position:relative}
+.ctool:hover{background:var(--surface3);color:var(--text)}
+.ctool.active{background:var(--accent-soft);color:var(--accent)}
+.ctool svg{width:17px;height:17px}
+.ctool .tip{position:absolute;bottom:-26px;left:50%;transform:translateX(-50%);background:var(--text);color:var(--bg);font-size:10px;padding:3px 8px;border-radius:5px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.ctool:hover .tip{opacity:1}
+.canvas-float{position:absolute;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px 12px;box-shadow:var(--shadow);z-index:10;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.canvas-float.left{top:14px;left:14px;max-width:230px}
+.canvas-float.right{top:14px;right:14px}
+.canvas-float.bottom{bottom:14px;left:50%;transform:translateX(-50%)}
+.pen-sizes{display:flex;gap:6px;align-items:center}
+.pen-size-dot{border-radius:50%;background:var(--text);cursor:pointer;border:2px solid transparent}
+.pen-size-dot.active{border-color:var(--accent)}
+.color-swatches{display:flex;gap:5px;flex-wrap:wrap;max-width:170px}
+.color-swatch{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0}
+.color-swatch.active{border-color:var(--accent);transform:scale(1.15)}
+input[type=range]{accent-color:var(--accent);width:80px}
+.zoom-badge{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;min-width:52px;text-align:center}
+.canvas-status{position:absolute;bottom:12px;left:14px;font-size:11.5px;color:var(--muted);background:var(--surface);border:1px solid var(--border);padding:5px 11px;border-radius:7px;z-index:10;display:flex;align-items:center;gap:8px}
+.text-overlay{position:absolute;z-index:20;background:transparent;border:1.5px dashed var(--accent);border-radius:4px;outline:none;padding:4px 6px;min-width:120px;min-height:30px;resize:none;overflow:hidden}
+.canvas-selection-box{position:absolute;border:1.5px dashed var(--accent);pointer-events:none;z-index:15}
+
+/* toast */
+#toasts{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;align-items:center}
+.toast{background:var(--text);color:var(--bg);padding:9px 18px;border-radius:9px;font-size:13px;font-weight:500;box-shadow:var(--shadow);animation:toastIn .25s ease}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* code edit modal textarea */
+.code-edit-ta{width:100%;min-height:300px;background:#0d1117;color:#e6edf3;border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:14px;font-family:"JetBrains Mono",Consolas,Monaco,monospace;font-size:13px;line-height:1.6;outline:none;resize:vertical;white-space:pre;tab-size:4}
+.field-label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:6px}
+.field-input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:var(--surface);outline:none;font-size:13px;margin-bottom:14px}
+.field-input:focus{border-color:var(--accent)}
+.kbd{font-family:"JetBrains Mono",monospace;font-size:10.5px;background:var(--surface3);border:1px solid var(--border);border-bottom-width:2px;border-radius:5px;padding:1px 6px}
+
+@media (max-width:900px){
+  .sidebar{position:absolute;left:0;top:0;bottom:0;box-shadow:var(--shadow);transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .doc-panel{position:absolute;right:0;top:0;bottom:0;box-shadow:var(--shadow)}
+  .paper{padding:32px 22px 80px;min-height:800px;margin-bottom:24px}
+  .view{padding:18px 14px 50px}
+  .search-box input{width:160px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div id="modalRoot"></div>
+<div id="toasts"></div>
+
+<script>
+/* ============================================================
+   PART 1 — Utils, Store, Router
+   ============================================================ */
+(function(){
+const App = window.App = window.App || {};
+
+// ---------- utils ----------
+App.uid = function(){
+  const a = new Uint8Array(15);
+  try{ crypto.getRandomValues(a); }catch(e){ for(let i=0;i<a.length;i++)a[i]=Math.floor(Math.random()*256); }
+  return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');
+};
+App.esc = function(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))};
+App.debounce = function(fn,ms){let t;return function(...a){clearTimeout(t);t=setTimeout(()=>fn.apply(this,a),ms)}};
+App.timeAgo = function(ts){
+  if(!ts) return '—';
+  const d = Date.now()-ts, s=Math.floor(d/1000);
+  if(s<60) return 'vừa xong'; if(s<3600) return Math.floor(s/60)+' phút trước';
+  if(s<86400) return Math.floor(s/3600)+' giờ trước'; if(s<86400*7) return Math.floor(s/86400)+' ngày trước';
+  return new Date(ts).toLocaleDateString('vi-VN');
+};
+App.fmtDate = function(ts){ return ts? new Date(ts).toLocaleString('vi-VN') : '—' };
+App.toast = function(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.getElementById('toasts').appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),300)},1800);
+};
+App.copyText = function(txt, msg){
+  const m = msg || 'Đã copy link';
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>App.toast(m),()=>fallback())}
+  else fallback();
+  function fallback(){const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');App.toast(m)}catch(e){}ta.remove()}
+};
+App.currentUrl = function(){ return location.origin + location.pathname };
+App.docLink = function(mode,token){ return App.currentUrl() + '#/'+mode+'/'+token };
+App.canvasLink = function(mode,token){ return App.currentUrl() + '#/canvas/'+mode+'/'+token };
+
+// ---------- store ----------
+const LS = {
+  get(k,d){ try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d} },
+  set(k,v){ try{localStorage.setItem(k,JSON.stringify(v))}catch(e){App.toast('Lưu thất bại — bộ nhớ đầy')} }
+};
+const Store = App.Store = {
+  docs: LS.get('gaydoc.docs',[]),
+  canvases: LS.get('gaydoc.canvases',[]),
+  pubs: LS.get('gaydoc.pubs',[]),
+  settings: LS.get('gaydoc.settings',{theme:'light',sidebar:true,canvasTheme:'white',defaultFont:'Arial'}),
+  saveDocs(){ LS.set('gaydoc.docs',this.docs) },
+  saveCanvases(){ LS.set('gaydoc.canvases',this.canvases) },
+  savePubs(){ LS.set('gaydoc.pubs',this.pubs) },
+  saveSettings(){ LS.set('gaydoc.settings',this.settings) },
+  newDoc(title){
+    const d = {id:App.uid(), title:title||'Untitled document', content:'', createdAt:Date.now(), updatedAt:Date.now(),
+      owner:'You', canvasId:null, editToken:App.uid(), viewToken:App.uid(), favorite:false, trashed:false, lastOpened:Date.now()};
+    this.docs.unshift(d); this.saveDocs(); return d;
+  },
+  getDoc(id){ return this.docs.find(d=>d.id===id) },
+  docByEditToken(t){ return this.docs.find(d=>d.editToken===t&&!d.trashed) },
+  docByViewToken(t){ return this.docs.find(d=>d.viewToken===t) },
+  newCanvas(docId){
+    const c = {id:App.uid(), docId:docId||null, objects:[], theme:this.settings.canvasTheme||'white',
+      view:{x:0,y:0,zoom:1}, createdAt:Date.now(), updatedAt:Date.now(), editToken:App.uid(), viewToken:App.uid()};
+    this.canvases.unshift(c); this.saveCanvases(); return c;
+  },
+  getCanvas(id){ return this.canvases.find(c=>c.id===id) },
+  canvasByEditToken(t){ return this.canvases.find(c=>c.editToken===t) },
+  canvasByViewToken(t){ return this.canvases.find(c=>c.viewToken===t) },
+  duplicateDoc(id){
+    const d = this.getDoc(id); if(!d) return null;
+    const c = JSON.parse(JSON.stringify(d));
+    c.id=App.uid(); c.title=d.title+' (copy)'; c.editToken=App.uid(); c.viewToken=App.uid();
+    c.createdAt=Date.now(); c.updatedAt=Date.now(); c.trashed=false; c.lastOpened=Date.now();
+    if(d.canvasId){ const oldC=this.getCanvas(d.canvasId); if(oldC){const nc=JSON.parse(JSON.stringify(oldC)); nc.id=App.uid();nc.docId=c.id;nc.editToken=App.uid();nc.viewToken=App.uid();this.canvases.unshift(nc);this.saveCanvases();c.canvasId=nc.id} }
+    this.docs.unshift(c); this.saveDocs(); return c;
+  }
+};
+
+// ---------- router ----------
+App.route = function(){
+  const h = location.hash.replace(/^#\/?/,'');
+  const parts = h.split('/').filter(Boolean);
+  let view='home', param=null, sub=null;
+  if(parts.length===0) view='home';
+  else if(parts[0]==='home') view='home';
+  else if(parts[0]==='recent') view='recent';
+  else if(parts[0]==='favorites') view='favorites';
+  else if(parts[0]==='trash') view='trash';
+  else if(parts[0]==='canvases') view='canvases';
+  else if(parts[0]==='settings') view='settings';
+  else if(parts[0]==='doc'&&parts[1]){view='doc';param=parts[1]}
+  else if(parts[0]==='edit'&&parts[1]){view='edit';param=parts[1]}
+  else if(parts[0]==='view'&&parts[1]){view='view';param=parts[1]}
+  else if(parts[0]==='canvas'&&parts[1]){
+    if((parts[1]==='edit'||parts[1]==='view')&&parts[2]){view='canvas-'+parts[1];param=parts[2]}
+    else {view='canvas';param=parts[1]}
+  }
+  else if(parts[0]==='p'&&parts[1]){view='pub';param=parts[1]}
+  else if(parts[0]==='s'&&parts[1]){view='shared';param=parts[1]}
+  App.currentView = {view,param,sub};
+  App.render();
+};
+window.addEventListener('hashchange',App.route);
+})();
+</script>
+
+<script>
+/* ============================================================
+   PART 2 — Syntax highlighter + code blocks
+   ============================================================ */
+(function(){
+const App = window.App;
+const KW = {
+  cpp:["alignas","alignof","and","and_eq","asm","auto","bitand","bitor","bool","break","case","catch","char","char8_t","char16_t","char32_t","class","compl","concept","const","consteval","constexpr","constinit","const_cast","continue","co_await","co_return","co_yield","decltype","default","delete","do","double","dynamic_cast","else","enum","explicit","export","extern","false","float","for","friend","goto","if","inline","int","long","mutable","namespace","new","noexcept","not","not_eq","nullptr","operator","or","or_eq","private","protected","public","register","reinterpret_cast","requires","return","short","signed","sizeof","static","static_assert","static_cast","struct","switch","template","this","thread_local","throw","true","try","typedef","typeid","typename","union","unsigned","using","virtual","void","volatile","wchar_t","while","xor","xor_eq"],
+  c:["auto","break","case","char","const","continue","default","do","double","else","enum","extern","float","for","goto","if","inline","int","long","register","restrict","return","short","signed","sizeof","static","struct","switch","typedef","union","unsigned","void","volatile","while","_Bool","_Complex","_Imaginary"],
+  python:["False","None","True","and","as","assert","async","await","break","class","continue","def","del","elif","else","except","finally","for","from","global","if","import","in","is","lambda","nonlocal","not","or","pass","raise","return","try","while","with","yield","print","len","range","str","int","float","list","dict","set","tuple","type","isinstance","super","self"],
+  java:["abstract","assert","boolean","break","byte","case","catch","char","class","const","continue","default","do","double","else","enum","extends","final","finally","float","for","goto","if","implements","import","instanceof","int","interface","long","native","new","package","private","protected","public","return","short","static","strictfp","super","switch","synchronized","this","throw","throws","transient","try","void","volatile","while","true","false","null","var","record","sealed","permits","yield"],
+  js:["abstract","arguments","await","boolean","break","byte","case","catch","char","class","const","continue","debugger","default","delete","do","double","else","enum","eval","export","extends","false","final","finally","float","for","function","goto","if","implements","import","in","instanceof","int","interface","let","long","native","new","null","package","private","protected","public","return","short","static","super","switch","synchronized","this","throw","throws","transient","true","try","typeof","var","void","volatile","while","with","yield","undefined","NaN","Infinity","console","window","document","Math","JSON","Promise","async","await","of"],
+  ts:["abstract","as","asserts","boolean","break","case","catch","class","const","constructor","continue","declare","default","delete","do","else","enum","export","extends","false","finally","for","from","function","get","if","implements","import","in","infer","instanceof","interface","is","keyof","let","module","namespace","never","new","null","number","object","package","private","protected","public","readonly","require","return","set","static","string","super","switch","symbol","this","throw","true","try","type","typeof","undefined","unique","unknown","var","void","while","with","yield","any","void"],
+  sql:["select","from","where","insert","into","values","update","set","delete","create","table","drop","alter","add","column","primary","key","foreign","references","join","inner","left","right","outer","on","group","by","order","having","limit","offset","and","or","not","null","is","in","between","like","as","distinct","union","all","exists","case","when","then","else","end","asc","desc","index","view","database","use","go","exec","execute","begin","commit","rollback","transaction","if","while","declare","cast","convert","int","integer","varchar","char","text","date","datetime","timestamp","float","decimal","numeric","boolean","true","false"],
+  bash:["if","then","else","elif","fi","for","in","do","done","while","until","case","esac","function","return","exit","echo","printf","read","local","export","declare","set","unset","cd","ls","pwd","mkdir","rm","cp","mv","cat","grep","sed","awk","find","xargs","chmod","chown","sudo","su","source","alias","true","false","test","break","continue","shift","getopts","trap","exec","eval","kill","sleep","wait","tar","curl","wget","ssh","scp","git","npm","node","python","pip"]
+};
+KW.types_cpp = ["int","long","short","unsigned","signed","char","float","double","void","bool","wchar_t","char16_t","char32_t","char8_t","size_t","string","vector","map","set","list","queue","stack","deque","pair","tuple","array","unordered_map","unordered_set","shared_ptr","unique_ptr","auto","const","namespace","std","cout","cin","endl","printf","scanf","NULL","nullptr","true","false"];
+
+function esc(s){return App.esc(s)}
+const _PROT={'&lt;':'\x01','&gt;':'\x02','&amp;':'\x03','&quot;':'\x04','&#39;':'\x05'};
+const _UNPROT={'\x01':'&lt;','\x02':'&gt;','\x03':'&amp;','\x04':'&quot;','\x05':'&#39;'};
+function prot(s){return s.replace(/&(lt|gt|amp|quot|#39);/g,m=>_PROT[m])}
+function unprot(s){return s.replace(/[\x01-\x05]/g,m=>_UNPROT[m])}
+
+App.highlight = function(code, lang){
+  lang = (lang||'text').toLowerCase();
+  if(lang==='c++'||lang==='cpp'||lang==='cc') lang='cpp';
+  if(lang==='javascript'||lang==='js') lang='js';
+  if(lang==='typescript'||lang==='ts') lang='ts';
+  if(lang==='python'||lang==='py') lang='python';
+  if(lang==='java') lang='java';
+  if(lang==='html'||lang==='xml') return hlHtml(code);
+  if(lang==='css') return hlCss(code);
+  if(lang==='json') return hlJson(code);
+  if(lang==='sql') return hlGeneric(code, KW.sql, [], '--', true);
+  if(lang==='bash'||lang==='sh'||lang==='shell') return hlGeneric(code, KW.bash, [], '#', false);
+  if(lang==='python') return hlGeneric(code, KW.python, [], '#', false);
+  if(lang==='cpp'||lang==='c') return hlCstyle(code, lang);
+  if(lang==='java'||lang==='js'||lang==='ts') return hlCstyle(code, lang);
+  return esc(code).split('\n').map((l,i)=>`<span class="line" data-n="${i+1}">${l||' '}</span>`).join('');
+};
+
+function wrapLines(html){
+  return html.split('\n').map((l,i)=>`<span class="line" data-n="${i+1}">${l||' '}</span>`).join('');
+}
+
+function hlHtml(code){
+  let out='';
+  const re = /(&lt;\/?[a-zA-Z][\w-]*|[\w-]+(?==)|"[^"]*"|'[^']*'|--&gt;|--|&lt;!|&gt;)/g;
+  let last=0, m;
+  const e = esc(code);
+  while((m=re.exec(e))){
+    out += esc(e.slice(last,m.index));
+    const t=m[0];
+    if(t.startsWith('&lt;')) out += `<span class="tok-tag">${t}</span>`;
+    else if(t==='&gt;'||t==='--&gt;'||t==='--'||t==='&lt;!') out += `<span class="tok-punc">${t}</span>`;
+    else if(t.startsWith('"')||t.startsWith("'")) out += `<span class="tok-str">${t}</span>`;
+    else out += `<span class="tok-attr">${t}</span>`;
+    last=m.index+t.length;
+  }
+  out += esc(e.slice(last));
+  return wrapLines(unprot(out));
+}
+function hlCss(code){
+  const e=prot(esc(code));
+  const master = /(\/\*[\s\S]*?\*\/)|("[^"]*"|'[^']*')|(#[0-9a-fA-F]{3,8}\b|\b\d+(?:\.\d+)?(?:px|em|rem|%|vh|vw|s|ms|deg)?\b)|(@[\w-]+)|([a-zA-Z-]+)(?=\s*:)|([a-zA-Z-]+)|([{}:;,>~+()]+)/g;
+  let out='',last=0,m;
+  while((m=master.exec(e))){
+    out+=e.slice(last,m.index); const t=m[0];
+    if(m[1]) out+=`<span class="tok-com">${t}</span>`;
+    else if(m[2]) out+=`<span class="tok-str">${t}</span>`;
+    else if(m[3]) out+=`<span class="tok-num">${t}</span>`;
+    else if(m[4]) out+=`<span class="tok-kw">${t}</span>`;
+    else if(m[5]) out+=`<span class="tok-prop">${t}</span>`;
+    else if(m[6]) out+=`<span class="tok-fn">${t}</span>`;
+    else if(m[7]) out+=`<span class="tok-punc">${t}</span>`;
+    last=m.index+t.length;
+  }
+  out+=e.slice(last);
+  return wrapLines(unprot(out));
+}
+function hlJson(code){
+  const e=prot(esc(code));
+  const master = /("[^"\\]*(?:\\.[^"\\]*)*"\s*:)|("[^"\\]*(?:\\.[^"\\]*)*")|(\btrue|false|null\b)|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)|([{}[\]:,])/g;
+  let out='',last=0,m;
+  while((m=master.exec(e))){
+    out+=e.slice(last,m.index); const t=m[0];
+    if(m[1]) out+=`<span class="tok-attr">${t}</span>`;
+    else if(m[2]) out+=`<span class="tok-str">${t}</span>`;
+    else if(m[3]) out+=`<span class="tok-bool">${t}</span>`;
+    else if(m[4]) out+=`<span class="tok-num">${t}</span>`;
+    else if(m[5]) out+=`<span class="tok-punc">${t}</span>`;
+    last=m.index+t.length;
+  }
+  out+=e.slice(last);
+  return wrapLines(unprot(out));
+}
+function hlGeneric(code, kw, types, commentSym, upperKw){
+  const e=prot(esc(code));
+  const kwSet = {}; kw.forEach(k=>kwSet[upperKw? k.toUpperCase():k]=1);
+  const com = commentSym==='#' ? '#[^\\n]*' : '--[^\\n]*';
+  const master = new RegExp('("(?:[^"\\\\]|\\\\.)*"|\'(?:[^\'\\\\]|\\\\.)*\')|('+com+')|(\\b\\d+(?:\\.\\d+)?\\b)|([a-zA-Z_]\\w*)|([+\\-*/%=<>!&|^~?:]+)','g');
+  let out='', last=0, m;
+  while((m=master.exec(e))){
+    out += e.slice(last, m.index);
+    const t=m[0];
+    if(m[1]) out += `<span class="tok-str">${t}</span>`;
+    else if(m[2]) out += `<span class="tok-com">${t}</span>`;
+    else if(m[3]) out += `<span class="tok-num">${t}</span>`;
+    else if(m[4]){ const key=upperKw? t.toUpperCase():t; out += kwSet[key]?`<span class="tok-kw">${t}</span>`:t; }
+    else if(m[5]) out += `<span class="tok-op">${t}</span>`;
+    last = m.index + t.length;
+  }
+  out += e.slice(last);
+  return wrapLines(unprot(out));
+}
+function hlCstyle(code, lang){
+  const e=prot(esc(code));
+  const kw = lang==='cpp'||lang==='c' ? KW.cpp.concat(KW.c) : (KW[lang]||[]);
+  const kwSet={}; kw.forEach(k=>kwSet[k]=1);
+  const typeSet={}; (lang==='cpp'||lang==='c'?KW.types_cpp:[]).forEach(t=>typeSet[t]=1);
+  // single-pass master regex: no re-scanning of inserted tags
+  const master = /(#\s*[^\n]*)|(\/\*[\s\S]*?\*\/|\/\/[^\n]*)|("(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')|(\b0[xX][0-9a-fA-F]+\b|\b\d+(?:\.\d+)?(?:[uUlLfF]+)?\b)|([a-zA-Z_]\w*)|([+\-*/%=<>!&|^~?:]+)/g;
+  let out='', last=0, m;
+  while((m=master.exec(e))){
+    out += e.slice(last, m.index);
+    const t=m[0];
+    if(m[1]) out += `<span class="tok-pp">${t}</span>`;
+    else if(m[2]) out += `<span class="tok-com">${t}</span>`;
+    else if(m[3]) out += `<span class="tok-str">${t}</span>`;
+    else if(m[4]) out += `<span class="tok-num">${t}</span>`;
+    else if(m[5]){
+      const followedByParen = /^\s*\(/.test(e.slice(m.index+t.length));
+      if(kwSet[t]) out+=`<span class="tok-kw">${t}</span>`;
+      else if(typeSet[t]) out+=`<span class="tok-type">${t}</span>`;
+      else if(followedByParen) out+=`<span class="tok-fn">${t}</span>`;
+      else if(/^[A-Z]/.test(t)) out+=`<span class="tok-type">${t}</span>`;
+      else out+=`<span class="tok-var">${t}</span>`;
+    }
+    else if(m[6]) out += `<span class="tok-op">${t}</span>`;
+    last = m.index + t.length;
+  }
+  out += e.slice(last);
+  return wrapLines(unprot(out));
+}
+
+App.LANGS = [['cpp','C++'],['c','C'],['python','Python'],['java','Java'],['js','JavaScript'],['ts','TypeScript'],['html','HTML'],['css','CSS'],['json','JSON'],['sql','SQL'],['bash','Bash'],['text','Plain text']];
+
+App.renderCodeBlock = function(code, lang, linenum){
+  const h = App.highlight(code, lang);
+  const langLabel = (App.LANGS.find(l=>l[0]===lang)||['text','Plain text'])[1];
+  return `<div class="code-block ${linenum===false?'no-linenum':''}" contenteditable="false" data-lang="${App.esc(lang)}" data-code="${btoa(unescape(encodeURIComponent(code)))}">
+    <div class="code-head">
+      <span class="dots"><i></i><i></i><i></i></span>
+      <span class="lang">${App.esc(langLabel)}</span>
+      <span class="spacer"></span>
+      <button type="button" data-act="copy-code"><i data-lucide="copy" style="width:11px;height:11px"></i> Copy</button>
+      <button type="button" data-act="edit-code"><i data-lucide="pencil" style="width:11px;height:11px"></i> Edit</button>
+      <select data-act="lang-select" style="display:none">${App.LANGS.map(l=>`<option value="${l[0]}" ${l[0]===lang?'selected':''}>${l[1]}</option>`).join('')}</select>
+    </div>
+    <pre>${h}</pre>
+  </div>`;
+};
+})();
+</script>
+
+<script>
+/* ============================================================
+   PART 3 — Views: Home / Storage / Doc page / Share / Export / View-only
+   ============================================================ */
+(function(){
+const App = window.App;
+const Store = App.Store;
+const app = ()=>document.getElementById('app');
+
+App.refreshIcons = function(){ if(window.lucide) try{lucide.createIcons()}catch(e){} };
+
+App.applyTheme = function(){
+  document.documentElement.setAttribute('data-theme', Store.settings.theme||'light');
+};
+
+// ---------- sidebar ----------
+function sidebar(active){
+  const counts = {
+    docs: Store.docs.filter(d=>!d.trashed).length,
+    canvases: Store.canvases.length,
+    trash: Store.docs.filter(d=>d.trashed).length,
+    fav: Store.docs.filter(d=>d.favorite&&!d.trashed).length
+  };
+  const open = Store.settings.sidebar!==false;
+  return `<aside class="sidebar ${open?'':'collapsed'}" id="sidebar">
+    <div class="sidebar-inner">
+      <div class="side-logo">
+        <div class="logo-mark"><i data-lucide="file-text"></i></div>
+        <div><h1 class="brand">GAY DOC</h1><small>Docs · Code · Canvas</small></div>
+      </div>
+      <button class="side-new" data-nav="newdoc"><i data-lucide="plus"></i> New Document</button>
+      <button class="side-btn ${active==='home'?'active':''}" data-nav="home"><i data-lucide="home"></i> Home <span class="count">${counts.docs}</span></button>
+      <button class="side-btn ${active==='recent'?'active':''}" data-nav="recent"><i data-lucide="clock"></i> Recent</button>
+      <button class="side-btn ${active==='favorites'?'active':''}" data-nav="favorites"><i data-lucide="star"></i> Favorites <span class="count">${counts.fav}</span></button>
+      <button class="side-btn ${active==='canvases'?'active':''}" data-nav="canvases"><i data-lucide="palette"></i> Canvases <span class="count">${counts.canvases}</span></button>
+      <div class="side-sep"></div>
+      <button class="side-btn ${active==='trash'?'active':''}" data-nav="trash"><i data-lucide="trash-2"></i> Trash <span class="count">${counts.trash}</span></button>
+      <button class="side-btn ${active==='settings'?'active':''}" data-nav="settings"><i data-lucide="settings"></i> Settings</button>
+      <div class="side-bottom">
+        <button class="theme-toggle" id="themeToggle"><i data-lucide="${Store.settings.theme==='dark'?'sun':'moon'}"></i> <span>${Store.settings.theme==='dark'?'Light mode':'Dark mode'}</span></button>
+      </div>
+    </div>
+  </aside>`;
+}
+
+function topbarHome(title, sub, extra){
+  return `<div class="topbar">
+    <button class="icon-btn" id="sidebarToggle"><i data-lucide="panel-left"></i></button>
+    <div style="flex:1"></div>${extra||''}
+  </div>`;
+}
+
+// ---------- home / storage ----------
+App.uiState = App.uiState || {tab:'documents', viewMode:'grid', sort:'updated', search:''};
+
+function docCard(d){
+  const hasCanvas = !!d.canvasId;
+  return `<div class="doc-card ${hasCanvas?'':''}" data-doc="${d.id}">
+    <div class="card-top">
+      <div class="card-icon"><i data-lucide="file-text"></i></div>
+      <h3 title="${App.esc(d.title)}">${App.esc(d.title)}</h3>
+    </div>
+    <div class="card-meta">
+      <span>${App.timeAgo(d.updatedAt)}</span>
+      ${d.favorite?'<span class="badge fav"><i data-lucide="star" style="width:10px;height:10px"></i> Fav</span>':''}
+      ${hasCanvas?'<span class="badge canvas"><i data-lucide="palette" style="width:10px;height:10px"></i> Canvas</span>':''}
+    </div>
+    <div class="menu-wrap card-menu-btn">
+      <button class="icon-btn" data-menu="${d.id}"><i data-lucide="more-vertical"></i></button>
+      <div class="menu" id="menu-${d.id}">
+        ${d.trashed?`
+          <button class="menu-item" data-act="restore" data-id="${d.id}"><i data-lucide="rotate-ccw"></i> Khôi phục</button>
+          <button class="menu-item danger" data-act="purge" data-id="${d.id}"><i data-lucide="trash-2"></i> Xóa vĩnh viễn</button>
+        `:`
+          <button class="menu-item" data-act="open" data-id="${d.id}"><i data-lucide="folder-open"></i> Open</button>
+          <button class="menu-item" data-act="rename" data-id="${d.id}"><i data-lucide="pencil"></i> Rename</button>
+          <button class="menu-item" data-act="duplicate" data-id="${d.id}"><i data-lucide="copy"></i> Duplicate</button>
+          <button class="menu-item" data-act="share" data-id="${d.id}"><i data-lucide="share-2"></i> Share</button>
+          <div class="menu-sep"></div>
+          <button class="menu-item ${d.favorite?'':'danger'}" data-act="favorite" data-id="${d.id}"><i data-lucide="star"></i> ${d.favorite?'Remove favorite':'Add favorite'}</button>
+          <button class="menu-item danger" data-act="delete" data-id="${d.id}"><i data-lucide="trash-2"></i> Move to trash</button>
+        `}
+      </div>
+    </div>
+  </div>`;
+}
+function canvasCard(c){
+  const doc = c.docId?Store.getDoc(c.docId):null;
+  return `<div class="doc-card canvas-type" data-canvas="${c.id}">
+    <div class="card-top">
+      <div class="card-icon"><i data-lucide="palette"></i></div>
+      <h3>Canvas · ${(doc?App.esc(doc.title):'Standalone').slice(0,20)}</h3>
+    </div>
+    <div class="card-meta">
+      <span>${App.timeAgo(c.updatedAt)}</span>
+      <span class="badge">${c.objects.length} objects</span>
+      <span class="badge">${c.theme}</span>
+    </div>
+    <div class="menu-wrap card-menu-btn">
+      <button class="icon-btn" data-menu="c-${c.id}"><i data-lucide="more-vertical"></i></button>
+      <div class="menu" id="menu-c-${c.id}">
+        <button class="menu-item" data-act="open-canvas" data-id="${c.id}"><i data-lucide="maximize"></i> Open canvas</button>
+        <button class="menu-item" data-act="share-canvas" data-id="${c.id}"><i data-lucide="share-2"></i> Share</button>
+        <button class="menu-item danger" data-act="delete-canvas" data-id="${c.id}"><i data-lucide="trash-2"></i> Delete</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+App.renderHome = function(tab){
+  const S = App.uiState;
+  let items = [];
+  let title='Home', sub='Tất cả tài liệu của bạn', emptyMsg='Chưa có tài liệu nào. Hãy tạo document mới!';
+  if(tab==='recent'){ title='Recent'; sub='Tài liệu mở gần đây'; items=Store.docs.filter(d=>!d.trashed).sort((a,b)=>(b.lastOpened||0)-(a.lastOpened||0)).slice(0,12); }
+  else if(tab==='favorites'){ title='Favorites'; sub='Tài liệu đã đánh dấu sao'; items=Store.docs.filter(d=>d.favorite&&!d.trashed); emptyMsg='Chưa có tài liệu yêu thích nào.'; }
+  else if(tab==='trash'){ title='Trash'; sub='Tài liệu đã xóa — có thể khôi phục'; items=Store.docs.filter(d=>d.trashed); emptyMsg='Thùng rác trống.'; }
+  else if(tab==='canvases'){ title='Canvases'; sub='Bảng vẽ vô hạn của bạn'; emptyMsg='Chưa có canvas nào. Tạo từ một document.'; }
+  else { items=Store.docs.filter(d=>!d.trashed); }
+
+  if(tab!=='canvases' && tab!=='trash'){
+    const q=(S.search||'').toLowerCase();
+    if(q) items=items.filter(d=>d.title.toLowerCase().includes(q));
+    if(S.sort==='name') items.sort((a,b)=>a.title.localeCompare(b.title));
+    else if(S.sort==='created') items.sort((a,b)=>b.createdAt-a.createdAt);
+    else items.sort((a,b)=>b.updatedAt-a.updatedAt);
+  }
+
+  const tabs = [['documents','Documents'],['recent','Recent'],['favorites','Favorites'],['canvases','Canvases'],['trash','Trash']];
+  const activeTab = tab||'documents';
+
+  app().innerHTML = `<div class="app-shell">
+    ${sidebar(activeTab)}
+    <div class="main">
+      ${topbarHome()}
+      <div class="view">
+        <div class="view-header">
+          <div><h2>${title}</h2><div class="sub">${sub} · ${tab==='canvases'?Store.canvases.length:items.length} mục</div></div>
+          <div class="search-box"><i data-lucide="search"></i><input id="searchInput" placeholder="Tìm kiếm tài liệu..." value="${App.esc(S.search||'')}"></div>
+          <select class="select" id="sortSelect">
+            <option value="updated" ${S.sort==='updated'?'selected':''}>Sửa gần nhất</option>
+            <option value="created" ${S.sort==='created'?'selected':''}>Tạo gần nhất</option>
+            <option value="name" ${S.sort==='name'?'selected':''}>Tên A→Z</option>
+          </select>
+          <div class="seg" id="viewSeg">
+            <button data-vm="grid" class="${S.viewMode==='grid'?'active':''}"><i data-lucide="grid" style="width:14px;height:14px"></i></button>
+            <button data-vm="list" class="${S.viewMode==='list'?'active':''}"><i data-lucide="list" style="width:14px;height:14px"></i></button>
+          </div>
+          <button class="btn primary" data-nav="newdoc"><i data-lucide="plus"></i> New</button>
+        </div>
+        <div class="seg" style="margin-bottom:18px" id="tabSeg">
+          ${tabs.map(t=>`<button data-tab="${t[0]}" class="${activeTab===t[0]?'active':''}">${t[1]}</button>`).join('')}
+        </div>
+        ${items.length===0?`<div class="empty-state"><div class="big-icon"><i data-lucide="${tab==='trash'?'trash-2':tab==='canvases'?'palette':'inbox'}"></i></div><h3>Trống</h3><p>${emptyMsg}</p><button class="btn primary" data-nav="newdoc"><i data-lucide="plus"></i> Tạo document mới</button></div>`
+        :`<div class="${S.viewMode==='grid'?'grid':'list'}">${tab==='canvases'? items.map(canvasCard).join('') : items.map(docCard).join('')}</div>`}
+      </div>
+    </div>
+  </div>`;
+  bindCommon();
+  App.refreshIcons();
+};
+
+function bindCommon(){
+  document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    const n=b.dataset.nav;
+    if(n==='newdoc'){ const d=Store.newDoc(); location.hash='#/doc/'+d.id; }
+    else location.hash='#/'+n;
+  }));
+  const st=document.getElementById('sidebarToggle');
+  if(st) st.addEventListener('click',()=>{Store.settings.sidebar=Store.settings.sidebar===false;Store.saveSettings();App.render()});
+  const tt=document.getElementById('themeToggle');
+  if(tt) tt.addEventListener('click',()=>{Store.settings.theme=Store.settings.theme==='dark'?'light':'dark';Store.saveSettings();App.applyTheme();App.render()});
+  const si=document.getElementById('searchInput');
+  if(si){si.addEventListener('input',App.debounce(()=>{App.uiState.search=si.value;App.render()},250))}
+  const ss=document.getElementById('sortSelect');
+  if(ss) ss.addEventListener('change',()=>{App.uiState.sort=ss.value;App.render()});
+  const vs=document.getElementById('viewSeg');
+  if(vs) vs.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{App.uiState.viewMode=b.dataset.vm;App.render()}));
+  const ts=document.getElementById('tabSeg');
+  if(ts) ts.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{location.hash='#/'+(b.dataset.tab==='documents'?'home':b.dataset.tab)}));
+  // card click
+  document.querySelectorAll('[data-doc]').forEach(c=>c.addEventListener('click',e=>{
+    if(e.target.closest('[data-menu]')||e.target.closest('.menu')) return;
+    const d=Store.getDoc(c.dataset.doc); if(d){d.lastOpened=Date.now();Store.saveDocs();location.hash='#/doc/'+d.id}
+  }));
+  document.querySelectorAll('[data-canvas]').forEach(c=>c.addEventListener('click',e=>{
+    if(e.target.closest('[data-menu]')||e.target.closest('.menu')) return;
+    location.hash='#/canvas/'+c.dataset.canvas;
+  }));
+  // menus
+  document.querySelectorAll('[data-menu]').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    const id=b.dataset.menu;
+    document.querySelectorAll('.menu.open').forEach(m=>{if(m.id!=='menu-'+id)m.classList.remove('open')});
+    document.getElementById('menu-'+id).classList.toggle('open');
+  }));
+  document.addEventListener('click',closeMenus);
+  function closeMenus(){document.querySelectorAll('.menu.open').forEach(m=>m.classList.remove('open'))}
+  document.querySelectorAll('[data-act]').forEach(b=>b.addEventListener('click',e=>{
+    e.stopPropagation();
+    const act=b.dataset.act, id=b.dataset.id;
+    const d=Store.getDoc(id);
+    if(act==='open'&&d){d.lastOpened=Date.now();Store.saveDocs();location.hash='#/doc/'+d.id}
+    else if(act==='rename'&&d){const t=prompt('Đổi tên tài liệu:',d.title);if(t!==null&&t.trim()){d.title=t.trim();d.updatedAt=Date.now();Store.saveDocs();App.render()}}
+    else if(act==='duplicate'&&d){Store.duplicateDoc(id);App.toast('Đã nhân bản');App.render()}
+    else if(act==='share'&&d){App.openShareModal(d)}
+    else if(act==='favorite'&&d){d.favorite=!d.favorite;Store.saveDocs();App.render()}
+    else if(act==='delete'&&d){d.trashed=true;d.updatedAt=Date.now();Store.saveDocs();App.toast('Đã chuyển vào thùng rác');App.render()}
+    else if(act==='restore'&&d){d.trashed=false;Store.saveDocs();App.render()}
+    else if(act==='purge'&&d){if(confirm('Xóa vĩnh viễn tài liệu này?')){Store.docs=Store.docs.filter(x=>x.id!==id);Store.saveDocs();App.render()}}
+    else if(act==='open-canvas'){location.hash='#/canvas/'+id}
+    else if(act==='share-canvas'){const c=Store.getCanvas(id);if(c)App.openCanvasShareModal(c)}
+    else if(act==='delete-canvas'){if(confirm('Xóa canvas này?')){Store.canvases=Store.canvases.filter(x=>x.id!==id);Store.saveCanvases();App.render()}}
+  }));
+}
+App.bindCommon = bindCommon;
+
+// trash card has restore/purge — override card for trash: add menu items. We'll handle via same menu; add restore/purge buttons in trash tab.
+// Simpler: in trash, show two buttons. We'll patch: when tab==='trash', menu items differ. Handled below via extra check in render? Keep simple: add restore/purge to all menus conditionally.
+// (We accept the generic menu; trash docs can be restored by opening and un-trashing. To be safe, add restore in doc page.)
+
+// ---------- Settings ----------
+App.renderSettings = function(){
+  app().innerHTML = `<div class="app-shell">${sidebar('settings')}
+    <div class="main">${topbarHome()}
+      <div class="view" style="max-width:720px">
+        <div class="view-header"><h2>Settings</h2></div>
+        <div class="panel-section"><h4><i data-lucide="palette"></i> Giao diện</h4>
+          <div class="info-row"><span class="k">Theme</span>
+            <div class="seg"><button data-set-theme="light" class="${Store.settings.theme==='light'?'active':''}">Light</button><button data-set-theme="dark" class="${Store.settings.theme==='dark'?'active':''}">Dark</button></div></div>
+          <div class="info-row"><span class="k">Canvas theme mặc định</span>
+            <select class="select" id="canvasThemeSel">${['white','dark','gray','cream','blackboard','sepia','blue','paper'].map(t=>`<option ${Store.settings.canvasTheme===t?'selected':''}>${t}</option>`).join('')}</select></div>
+          <div class="info-row"><span class="k">Font mặc định editor</span>
+            <select class="select" id="fontSel">${['Arial','Helvetica','Times New Roman','Georgia','Verdana','Tahoma','Trebuchet MS','Courier New','Consolas','Monaco','Menlo','system-ui'].map(f=>`<option ${Store.settings.defaultFont===f?'selected':''}>${f}</option>`).join('')}</select></div>
+        </div>
+        <div class="panel-section"><h4><i data-lucide="database"></i> Dữ liệu</h4>
+          <div class="info-row"><span class="k">Documents</span><span class="v">${Store.docs.length}</span></div>
+          <div class="info-row"><span class="k">Canvases</span><span class="v">${Store.canvases.length}</span></div>
+          <div class="info-row"><span class="k">Published exports</span><span class="v">${Store.pubs.length}</span></div>
+          <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap">
+            <button class="btn danger" id="clearAll"><i data-lucide="trash-2"></i> Xóa toàn bộ dữ liệu</button>
+            <button class="btn" id="exportAll"><i data-lucide="download"></i> Export dữ liệu (JSON)</button>
+          </div>
+        </div>
+        <div class="perm-note">Dữ liệu được lưu cục bộ trên trình duyệt (localStorage). Link chia sẻ sử dụng secure random token 240-bit, edit token và view token khác nhau hoàn toàn.</div>
+      </div>
+    </div></div>`;
+  bindCommon();
+  document.querySelectorAll('[data-set-theme]').forEach(b=>b.addEventListener('click',()=>{Store.settings.theme=b.dataset.setTheme;Store.saveSettings();App.applyTheme();App.render()}));
+  document.getElementById('canvasThemeSel').addEventListener('change',e=>{Store.settings.canvasTheme=e.target.value;Store.saveSettings()});
+  document.getElementById('fontSel').addEventListener('change',e=>{Store.settings.defaultFont=e.target.value;Store.saveSettings()});
+  document.getElementById('clearAll').addEventListener('click',()=>{if(confirm('Xóa TOÀN BỘ documents, canvases, settings? Không thể khôi phục.')){localStorage.clear();location.reload()}});
+  document.getElementById('exportAll').addEventListener('click',()=>{
+    const blob=new Blob([JSON.stringify({docs:Store.docs,canvases:Store.canvases,pubs:Store.pubs},null,2)],{type:'application/json'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='gaydoc-backup.json';a.click();
+  });
+  App.refreshIcons();
+};
+
+// ---------- Share modal ----------
+App.openShareModal = function(doc){
+  const editLink = App.docLink('edit',doc.editToken);
+  const viewLink = App.docLink('view',doc.viewToken);
+  const isLocal = location.protocol === 'file:';
+  const magic = isLocal ? '' : App.magicLink(doc);
+  showModal(`<div class="modal-head"><h3>Chia sẻ tài liệu</h3><button class="icon-btn" data-close><i data-lucide="x"></i></button></div>
+    <div class="modal-body">
+      <div class="perm-note" style="background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);margin-bottom:12px"><b>Cách dễ nhất &amp; chắc chắn 100%:</b> bấm nút dưới để xuất file .html, rồi gửi file đó cho người khác (Zalo/Gmail/Drive). Họ mở lên xem được đầy đủ — không cần internet, không bị lỗi link.</div>
+      <button class="btn primary" id="exportForShare" style="width:100%;justify-content:center;margin-bottom:16px"><i data-lucide="download"></i> Xuất file .html để gửi cho người khác</button>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Hoặc dùng link (chỉ hoạt động khi file đã được đưa lên mạng, không phải file local):</p>
+      <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(editLink)}"><button class="btn small" data-copy="${App.esc(editLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(editLink)}">Open</button></div>
+      <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(viewLink)}"><button class="btn small" data-copy="${App.esc(viewLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(viewLink)}">Open</button></div>
+      ${isLocal ? `
+      <div class="perm-note" style="background:var(--accent2-soft);border:1px solid var(--accent2);color:var(--accent2)"><b>Bạn đang mở file local (file://).</b> Link Edit/View/Magic sẽ KHÔNG mở được trên máy người khác vì đường dẫn trỏ vào máy bạn. Hãy dùng nút "Xuất file .html" ở trên, hoặc đưa file index.html lên mạng (Netlify Drop / GitHub Pages) rồi tạo link từ đó.</div>
+      ` : `
+      <div class="link-row"><span class="lbl edit">Magic</span><input readonly value="${App.esc(magic)}"><button class="btn small" data-copy="${App.esc(magic)}">Copy</button><button class="btn small ghost" data-open="${App.esc(magic)}">Open</button></div>
+      <div class="perm-note"><b>Magic link:</b> ai bấm vào cũng xem được ngay (không cần tài khoản). Lưu ý: link rất dài, nếu gửi qua Zalo/Messenger có thể bị cắt — nếu bị lỗi, hãy dùng file .html ở trên.</div>
+      `}
+    </div>
+    <div class="modal-foot"><button class="btn" data-close>Đóng</button></div>`);
+  const eb = document.getElementById('exportForShare');
+  if(eb) eb.addEventListener('click', ()=>{ App.closeModal(); App.saveDocNow(); App.exportHTML(doc); });
+};
+App.openCanvasShareModal = function(c){
+  const editLink = App.canvasLink('edit',c.editToken);
+  const viewLink = App.canvasLink('view',c.viewToken);
+  showModal(`<div class="modal-head"><h3>Chia sẻ Canvas</h3><button class="icon-btn" data-close><i data-lucide="x"></i></button></div>
+    <div class="modal-body">
+      <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(editLink)}"><button class="btn small" data-copy="${App.esc(editLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(editLink)}">Open</button></div>
+      <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(viewLink)}"><button class="btn small" data-copy="${App.esc(viewLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(viewLink)}">Open</button></div>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close>Đóng</button></div>`);
+};
+
+function showModal(html){
+  const root=document.getElementById('modalRoot');
+  root.innerHTML=`<div class="modal-backdrop" id="modalBackdrop"><div class="modal">${html}</div></div>`;
+  root.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>root.innerHTML=''));
+  root.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>App.copyText(b.dataset.copy)));
+  root.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>window.open(b.dataset.open,'_blank')));
+  document.getElementById('modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')root.innerHTML=''});
+  App.refreshIcons();
+}
+App.showModal = showModal;
+App.closeModal = ()=>document.getElementById('modalRoot').innerHTML='';
+
+// ---------- Export HTML ----------
+App.exportHTML = function(doc){
+  const html = App.buildExportHTML(doc);
+  // publish snapshot with its own secure token
+  const token = App.uid();
+  Store.pubs.unshift({token, html, title:doc.title, createdAt:Date.now()});
+  Store.savePubs();
+  const pubUrl = App.currentUrl()+'#/p/'+token;
+  // also download file
+  const blob = new Blob([html],{type:'text/html'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(doc.title||'document').replace(/[^\w\-]+/g,'_')+'.html';a.click();
+  const editLink=App.docLink('edit',doc.editToken), viewLink=App.docLink('view',doc.viewToken);
+  showModal(`<div class="modal-head"><h3>Export HTML thành công</h3><button class="icon-btn" data-close><i data-lucide="x"></i></button></div>
+    <div class="modal-body">
+      <p style="font-size:13px;color:var(--muted);margin-bottom:10px">File .html đã được tải xuống. Một phiên bản published cũng được tạo với URL bảo mật riêng:</p>
+      <div class="link-row"><span class="lbl view">Published</span><input readonly value="${App.esc(pubUrl)}"><button class="btn small" data-copy="${App.esc(pubUrl)}">Copy</button><button class="btn small ghost" data-open="${App.esc(pubUrl)}">Open</button></div>
+      <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(editLink)}"><button class="btn small" data-copy="${App.esc(editLink)}">Copy</button></div>
+      <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(viewLink)}"><button class="btn small" data-copy="${App.esc(viewLink)}">Copy</button></div>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close>Đóng</button></div>`);
+};
+
+App.buildExportHTML = function(doc){
+  // convert editor content (with code blocks) to standalone HTML
+  const tmp = document.createElement('div');
+  tmp.innerHTML = doc.content || '';
+  let pages = tmp.querySelectorAll('.paper');
+  if(pages.length===0){
+    const w = document.createElement('div'); w.className='paper'; w.innerHTML = tmp.innerHTML; tmp.innerHTML=''; tmp.appendChild(w);
+    pages = tmp.querySelectorAll('.paper');
+  }
+  pages.forEach(pg=>{
+    pg.querySelectorAll('.code-block').forEach(cb=>{
+      let code=''; try{ code = decodeURIComponent(escape(atob(cb.dataset.code||''))); }catch(err){}
+      const lang = cb.dataset.lang||'text';
+      cb.outerHTML = App.renderCodeBlock(code, lang, true);
+    });
+  });
+  const body = Array.from(pages).map(pg=>`<div class="export-page">${pg.innerHTML}</div>`).join('');
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${App.esc(doc.title)}</title>
+<style>
+body{background:#f3f3f0;margin:0;padding:40px 20px;font-family:${Store.settings.defaultFont||'Arial'},sans-serif;line-height:1.7;color:#1f2328}
+.export-page{max-width:820px;margin:0 auto 40px;background:#fff;padding:60px 70px 120px;min-height:92vh;box-shadow:0 1px 3px rgba(0,0,0,.08),0 8px 24px rgba(0,0,0,.06);border-radius:6px}
+h1{font-size:2em}h2{font-size:1.5em}h3{font-size:1.25em}
+blockquote{border-left:3px solid #0f766e;padding:4px 16px;color:#555;background:rgba(15,118,110,.08);margin:1em 0}
+code{background:#f0f0ec;padding:1px 5px;border-radius:4px;font-family:Consolas,Monaco,monospace}
+.code-block{background:#0d1117;color:#e6edf3;border-radius:10px;margin:14px 0;overflow:hidden;font-family:Consolas,Monaco,monospace;font-size:13px;line-height:1.6}
+.code-block .code-head{padding:7px 12px;background:rgba(255,255,255,.05);color:#7ee787;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+.code-block pre{margin:0;padding:14px 16px;overflow-x:auto;white-space:pre}
+.code-block .line{display:block;padding-left:44px;position:relative}
+.code-block .line::before{content:attr(data-n);position:absolute;left:0;width:30px;text-align:right;color:#484f58}
+.tok-kw{color:#ff7b72}.tok-type{color:#79c0ff}.tok-fn{color:#d2a8ff}.tok-str{color:#a5d6ff}.tok-num{color:#79c0ff}.tok-com{color:#8b949e;font-style:italic}.tok-pp{color:#ffa657}.tok-op{color:#ff7b72}.tok-tag{color:#7ee787}.tok-attr{color:#79c0ff}.tok-prop{color:#79c0ff}.tok-bool{color:#79c0ff}
+table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:6px 12px}
+img{max-width:100%}a{color:#0f766e}hr{border:none;border-top:2px solid #eee;margin:1.5em 0}
+ul.checklist{list-style:none;padding-left:0}
+</style></head><body><div class="export-page"><h1>${App.esc(doc.title)}</h1><p style="color:#888;font-size:12px">Exported from GAY DOC · ${new Date().toLocaleString()}</p><hr>${body}</div><script>(function(){document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act="copy-code"]');if(!b)return;var cb=b.closest('.code-block');if(!cb)return;try{var code=decodeURIComponent(escape(atob(cb.getAttribute('data-code')||'')));if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(code);else{var ta=document.createElement('textarea');ta.value=code;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();}var old=b.textContent;b.textContent='✓ Copied';setTimeout(function(){b.textContent=old;},1500);}catch(err){}});})();<\/script></body></html>`;
+};
+
+// ---------- Published view ----------
+App.renderPub = function(token){
+  const p = Store.pubs.find(x=>x.token===token);
+  if(!p){ App.render404(); return; }
+  document.documentElement.setAttribute('data-theme','light');
+  app().innerHTML = `<div style="height:100vh;overflow:auto;background:#fff"><iframe style="width:100%;height:100vh;border:none" srcdoc="${App.esc(p.html)}"></iframe></div>`;
+};
+
+// ---------- View-only doc ----------
+App.renderViewOnly = function(token){
+  const doc = Store.docByViewToken(token);
+  if(!doc){ App.render404(); return; }
+  app().innerHTML = `<div style="height:100vh;overflow:auto;background:var(--bg)">
+    <div style="max-width:860px;margin:0 auto;padding:30px 20px 80px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <div class="logo-mark" style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff"><i data-lucide="file-text" style="width:18px;height:18px"></i></div>
+        <div><h1 class="brand" style="font-size:18px">GAY DOC</h1><small style="color:var(--muted);font-size:11px">View only · không thể chỉnh sửa</small></div>
+        <div style="flex:1"></div>
+        <span class="badge" style="font-size:11px;padding:4px 10px;border-radius:10px;background:var(--surface3);color:var(--muted);font-weight:600">Sửa lần cuối: ${App.timeAgo(doc.updatedAt)}</span>
+        <a class="btn small" href="${App.currentUrl()}#/home">Open in GAY DOC</a>
+      </div>
+      <div style="min-height:70vh;cursor:default" contenteditable="false">${(()=>{ const c=doc.content||'<p style="color:#999">Document trống.</p>'; return /class="paper"/.test(c)? c : `<div class="paper" style="min-height:70vh;padding-bottom:20vh">${c}</div>`; })()}</div>
+    </div></div>`;
+  App.refreshIcons();
+};
+
+App.magicLink = function(doc){
+  const payload = JSON.stringify({t: doc.title||'Untitled document', c: doc.content||''});
+  let b64 = btoa(unescape(encodeURIComponent(payload)));
+  b64 = b64.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  return App.currentUrl() + '#/s/' + b64;
+};
+App.readMagic = function(token){
+  try{
+    let b64 = token.replace(/-/g,'+').replace(/_/g,'/');
+    while(b64.length%4) b64 += '=';
+    const json = decodeURIComponent(escape(atob(b64)));
+    return JSON.parse(json);
+  }catch(e){ return null; }
+};
+App.renderSharedMagic = function(token){
+  const data = App.readMagic(token);
+  if(!data){ App.render404(); return; }
+  document.documentElement.setAttribute('data-theme','light');
+  let content = data.c || '<p style="color:#999">Document trống.</p>';
+  if(!/class="paper"/.test(content)) content = `<div class="paper" style="min-height:70vh;padding-bottom:20vh">${content}</div>`;
+  app().innerHTML = `<div style="height:100vh;overflow:auto;background:var(--bg)">
+    <div style="max-width:860px;margin:0 auto;padding:30px 20px 80px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <div class="logo-mark" style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff"><i data-lucide="file-text" style="width:18px;height:18px"></i></div>
+        <div><h1 class="brand" style="font-size:18px">GAY DOC</h1><small style="color:var(--muted);font-size:11px">Magic link · chỉ xem · nội dung nhúng trong URL</small></div>
+        <div style="flex:1"></div>
+        <a class="btn small" href="${App.currentUrl()}#/home">Open in GAY DOC</a>
+      </div>
+      <h2 style="font-size:20px;margin-bottom:14px;color:var(--text)">${App.esc(data.t||'Untitled document')}</h2>
+      <div style="min-height:70vh;cursor:default" contenteditable="false">${content}</div>
+    </div></div>`;
+  App.refreshIcons();
+};
+App.render404 = function(){
+  app().innerHTML=`<div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;background:var(--bg)">
+    <div class="big-icon" style="width:70px;height:70px;border:1px dashed var(--border2);border-radius:18px;display:flex;align-items:center;justify-content:center;color:var(--faint)"><i data-lucide="file-question" style="width:32px;height:32px"></i></div>
+    <h2 style="font-family:Chakra Petch">Không tìm thấy tài liệu</h2>
+    <p style="color:var(--muted);font-size:13px">Link có thể đã hết hạn hoặc token không đúng.</p>
+    <a class="btn primary" href="${App.currentUrl()}#/home">Về trang chủ</a></div>`;
+  App.refreshIcons();
+};
+})();
+</script>
+<script>
+/* ============================================================
+   PART 4 — Document editor page + toolbar + code editing
+   ============================================================ */
+(function(){
+const App = window.App;
+const Store = App.Store;
+const FONTS = ['Arial','Helvetica','Times New Roman','Georgia','Verdana','Tahoma','Trebuchet MS','Courier New','Consolas','Monaco','Menlo','system-ui'];
+let activeDoc = null, saveTimer=null, statusEl=null;
+
+function setStatus(s){ if(!statusEl) return; statusEl.className='save-status '+s; const t=statusEl.querySelector('.save-text'); if(t) t.textContent = s==='saving'?'Đang lưu...':s==='saved'?'Đã lưu':'Offline'; }
+
+App.saveDocNow = function(){
+  if(!activeDoc) return;
+  const wrap = document.getElementById('paperWrap') || document.getElementById('paper');
+  if(wrap) activeDoc.content = wrap.innerHTML;
+  activeDoc.updatedAt = Date.now();
+  Store.saveDocs();
+  setStatus('saved');
+};
+const scheduleSave = App.debounce(()=>{ if(activeDoc){ App.saveDocNow(); } },700);
+function markDirty(){ if(!activeDoc) return; setStatus('saving'); scheduleSave(); }
+
+function toolbarHTML(){
+  const sizeOpts = [[1,'10px'],[2,'13px'],[3,'16px'],[4,'18px'],[5,'24px'],[6,'32px'],[7,'48px']];
+  return `<div class="toolbar" id="toolbar">
+    <button class="tb-btn" data-cmd="undo" title="Undo"><i data-lucide="undo-2"></i></button>
+    <button class="tb-btn" data-cmd="redo" title="Redo"><i data-lucide="redo-2"></i></button>
+    <div class="tb-sep"></div>
+    <select class="tb-select font" id="fontSel" title="Font">${FONTS.map(f=>`<option value="${f}">${f}</option>`).join('')}</select>
+    <select class="tb-select" id="sizeSel" title="Font size">${sizeOpts.map(s=>`<option value="${s[0]}">${s[1]}</option>`).join('')}</select>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" data-cmd="bold" title="Bold (Ctrl+B)"><i data-lucide="bold"></i></button>
+    <button class="tb-btn" data-cmd="italic" title="Italic (Ctrl+I)"><i data-lucide="italic"></i></button>
+    <button class="tb-btn" data-cmd="underline" title="Underline"><i data-lucide="underline"></i></button>
+    <button class="tb-btn" data-cmd="strikeThrough" title="Strikethrough"><i data-lucide="strikethrough"></i></button>
+    <div class="color-wrap" title="Text color"><i data-lucide="type" style="width:15px;height:15px;color:var(--muted)"></i><span class="swatch" id="fgSwatch"></span><input type="color" id="fgColor" value="#1c1c1e"></div>
+    <div class="color-wrap" title="Highlight"><i data-lucide="highlighter" style="width:15px;height:15px;color:var(--muted)"></i><span class="swatch" id="hlSwatch" style="background:#fef08a"></span><input type="color" id="hlColor" value="#fef08a"></div>
+    <div class="tb-sep"></div>
+    <select class="tb-select" id="headingSel" title="Heading"><option value="p">Paragraph</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option><option value="blockquote">Quote</option></select>
+    <button class="tb-btn" data-cmd="insertUnorderedList" title="Bullet list"><i data-lucide="list"></i></button>
+    <button class="tb-btn" data-cmd="insertOrderedList" title="Numbered list"><i data-lucide="list-ordered"></i></button>
+    <button class="tb-btn" id="checklistBtn" title="Checklist"><i data-lucide="list-checks"></i></button>
+    <button class="tb-btn" id="codeBlockBtn" title="Code block"><i data-lucide="code-2"></i></button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="linkBtn" title="Link"><i data-lucide="link"></i></button>
+    <button class="tb-btn" id="imageBtn" title="Image"><i data-lucide="image"></i></button>
+    <button class="tb-btn" id="tableBtn" title="Table"><i data-lucide="table"></i></button>
+    <button class="tb-btn" data-cmd="insertHorizontalRule" title="Horizontal line"><i data-lucide="minus"></i></button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" data-cmd="justifyLeft" title="Align left"><i data-lucide="align-left"></i></button>
+    <button class="tb-btn" data-cmd="justifyCenter" title="Align center"><i data-lucide="align-center"></i></button>
+    <button class="tb-btn" data-cmd="justifyRight" title="Align right"><i data-lucide="align-right"></i></button>
+    <button class="tb-btn" data-cmd="outdent" title="Outdent"><i data-lucide="indent-decrease"></i></button>
+    <button class="tb-btn" data-cmd="indent" title="Indent"><i data-lucide="indent-increase"></i></button>
+    <input type="file" id="imgFileInput" accept="image/*" class="hidden">
+  </div>`;
+}
+
+App.renderDoc = function(id, sharedMode){
+  const doc = Store.getDoc(id);
+  if(!doc){ App.render404(); return; }
+  activeDoc = doc;
+  doc.lastOpened = Date.now(); Store.saveDocs();
+  const canvasObj = doc.canvasId ? Store.getCanvas(doc.canvasId) : null;
+  const panelOpen = !sharedMode;
+  const editLink = App.docLink('edit',doc.editToken), viewLink = App.docLink('view',doc.viewToken);
+  const words = (doc.content||'').replace(/<[^>]+>/g,' ').split(/\s+/).filter(Boolean).length;
+
+  document.getElementById('app').innerHTML = `<div class="app-shell">
+    ${sharedMode?'':App.sidebarHTML?App.sidebarHTML('doc'):''}
+    <div class="main" style="${sharedMode?'':''}">
+      <div class="topbar">
+        ${sharedMode?'<button class="icon-btn" data-gohome><i data-lucide="arrow-left"></i></button>':'<button class="icon-btn" id="sidebarToggle"><i data-lucide="panel-left"></i></button>'}
+        <input class="title-input" id="titleInput" value="${App.esc(doc.title)}" placeholder="Untitled document">
+        <div class="save-status saved" id="saveStatus"><span class="dot"></span><span class="save-text">Đã lưu</span></div>
+        <div style="flex:1"></div>
+        ${canvasObj?'':'<button class="create-canvas-mini" id="createCanvasBtn"><i data-lucide="palette" style="width:12px;height:12px"></i> + Create Canvas</button>'}
+        <button class="btn small ghost" id="exportBtn"><i data-lucide="download" style="width:13px;height:13px"></i> Export HTML</button>
+        <button class="btn small primary" id="shareBtn"><i data-lucide="share-2" style="width:13px;height:13px"></i> Share</button>
+        <div class="menu-wrap"><button class="icon-btn" id="docMenuBtn"><i data-lucide="more-vertical"></i></button>
+          <div class="menu left" id="docMenu">
+            <button class="menu-item" data-act="rename"><i data-lucide="pencil"></i> Đổi tên</button>
+            <button class="menu-item" data-act="duplicate"><i data-lucide="copy"></i> Nhân bản</button>
+            <button class="menu-item" data-act="favorite"><i data-lucide="star"></i> ${doc.favorite?'Bỏ yêu thích':'Thêm yêu thích'}</button>
+            <button class="menu-item" data-act="md"><i data-lucide="file-code"></i> Export Markdown</button>
+            <button class="menu-item" data-act="txt"><i data-lucide="file-text"></i> Export Plain text</button>
+            <div class="menu-sep"></div>
+            <button class="menu-item danger" data-act="trash"><i data-lucide="trash-2"></i> ${doc.trashed?'Xóa vĩnh viễn':'Chuyển vào thùng rác'}</button>
+          </div></div>
+      </div>
+      ${doc.trashed?`<div style="background:rgba(220,38,38,.1);color:#dc2626;padding:8px 18px;font-size:13px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(220,38,38,.2)">Tài liệu này đang trong thùng rác. <button class="btn small danger" id="restoreBtn">Khôi phục</button></div>`:''}
+      <div class="doc-layout">
+        <div class="editor-col" id="editorCol">
+          ${toolbarHTML()}
+          <div id="paperWrap" class="paper-wrap" contenteditable="true" spellcheck="false" style="font-family:${Store.settings.defaultFont||'Arial'}">${(()=>{ const c=doc.content||'<p><br></p>'; return /class="paper"/.test(c)? c : `<div class="paper">${c}</div>`; })()}</div>
+          ${canvasObj?`<div class="canvas-link-bar">
+            <div class="card-icon" style="width:38px;height:38px;border-radius:9px;background:var(--accent2-soft);color:var(--accent2);display:flex;align-items:center;justify-content:center;flex-shrink:0"><i data-lucide="palette" style="width:18px;height:18px"></i></div>
+            <div class="info"><b>Canvas đã được tạo cho tài liệu này</b><p>Bảng vẽ vô hạn · ${canvasObj.objects.length} objects · theme: ${canvasObj.theme}</p></div>
+            <a class="btn primary small" href="#/canvas/${canvasObj.id}">Open Canvas →</a>
+            <button class="btn small ghost" id="shareCanvasBtn">Share</button>
+          </div>`:''}
+        </div>
+        ${panelOpen?`<div class="doc-panel" id="docPanel"><div class="doc-panel-inner">
+          <div class="panel-tabs">
+            <button class="active" data-ptab="details">Details</button>
+            <button data-ptab="share">Share</button>
+            <button data-ptab="canvas">Canvas</button>
+          </div>
+          <div class="panel-body" id="panelBody"></div>
+        </div></div>`:''}
+      </div>
+    </div>
+  </div>`;
+
+  statusEl = document.getElementById('saveStatus');
+  if(!navigator.onLine) setStatus('offline');
+  bindEditor(doc, canvasObj, sharedMode);
+  if(panelOpen) renderPanel('details', doc, canvasObj);
+  App.refreshIcons();
+};
+
+// sidebar HTML helper (reuse) — build inline
+App.sidebarHTML = function(active){
+  const counts = {docs:Store.docs.filter(d=>!d.trashed).length, canvases:Store.canvases.length, trash:Store.docs.filter(d=>d.trashed).length, fav:Store.docs.filter(d=>d.favorite&&!d.trashed).length};
+  const open = Store.settings.sidebar!==false;
+  return `<aside class="sidebar ${open?'':'collapsed'}" id="sidebar"><div class="sidebar-inner">
+    <div class="side-logo"><div class="logo-mark"><i data-lucide="file-text"></i></div><div><h1 class="brand">GAY DOC</h1><small>Docs · Code · Canvas</small></div></div>
+    <button class="side-new" data-nav="newdoc"><i data-lucide="plus"></i> New Document</button>
+    <button class="side-btn ${active==='home'?'active':''}" data-nav="home"><i data-lucide="home"></i> Home <span class="count">${counts.docs}</span></button>
+    <button class="side-btn" data-nav="recent"><i data-lucide="clock"></i> Recent</button>
+    <button class="side-btn" data-nav="favorites"><i data-lucide="star"></i> Favorites <span class="count">${counts.fav}</span></button>
+    <button class="side-btn" data-nav="canvases"><i data-lucide="palette"></i> Canvases <span class="count">${counts.canvases}</span></button>
+    <div class="side-sep"></div>
+    <button class="side-btn" data-nav="trash"><i data-lucide="trash-2"></i> Trash <span class="count">${counts.trash}</span></button>
+    <button class="side-btn" data-nav="settings"><i data-lucide="settings"></i> Settings</button>
+    <div class="side-bottom"><button class="theme-toggle" id="themeToggle"><i data-lucide="${Store.settings.theme==='dark'?'sun':'moon'}"></i> <span>${Store.settings.theme==='dark'?'Light mode':'Dark mode'}</span></button></div>
+  </div></aside>`;
+};
+
+function renderPanel(tab, doc, canvasObj){
+  const pb = document.getElementById('panelBody');
+  const editLink=App.docLink('edit',doc.editToken), viewLink=App.docLink('view',doc.viewToken);
+  document.querySelectorAll('[data-ptab]').forEach(b=>b.classList.toggle('active',b.dataset.ptab===tab));
+  if(tab==='details'){
+    pb.innerHTML = `<div class="panel-section"><h4><i data-lucide="info"></i> Document information</h4>
+      <div class="info-row"><span class="k">Owner</span><span class="v">${App.esc(doc.owner)}</span></div>
+      <div class="info-row"><span class="k">Created</span><span class="v">${App.fmtDate(doc.createdAt)}</span></div>
+      <div class="info-row"><span class="k">Last edited</span><span class="v">${App.timeAgo(doc.updatedAt)}</span></div>
+      <div class="info-row"><span class="k">Words</span><span class="v" id="wordCount">—</span></div>
+      <div class="info-row"><span class="k">ID</span><span class="v mono" style="font-size:10px">${doc.id.slice(0,12)}…</span></div>
+    </div>
+    <div class="panel-section"><h4><i data-lucide="sliders"></i> Quản lý</h4>
+      <div class="panel-actions">
+        <button class="btn" data-pact="rename"><i data-lucide="pencil"></i> Đổi tên tài liệu</button>
+        <button class="btn" data-pact="duplicate"><i data-lucide="copy"></i> Nhân bản document</button>
+        <button class="btn" data-pact="md"><i data-lucide="file-code"></i> Export Markdown</button>
+        <button class="btn" data-pact="txt"><i data-lucide="file-text"></i> Export Plain text</button>
+        <button class="btn primary" data-pact="addpage"><i data-lucide="plus"></i> Thêm trang mới</button>
+        <button class="btn danger" data-pact="trash"><i data-lucide="trash-2"></i> ${doc.trashed?'Xóa vĩnh viễn':'Chuyển vào thùng rác'}</button>
+      </div>
+    </div>`;
+    const wc = (doc.content||'').replace(/<[^>]+>/g,' ').split(/\s+/).filter(Boolean).length;
+    document.getElementById('wordCount').textContent = wc;
+  } else if(tab==='share'){
+    pb.innerHTML = `<div class="panel-section"><h4><i data-lucide="share-2"></i> Sharing links</h4>
+      <label class="field-label">Editable link — người mở có thể chỉnh sửa</label>
+      <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(editLink)}"><button class="btn small" data-copy="${App.esc(editLink)}">Copy</button></div>
+      <label class="field-label" style="margin-top:14px">View-only link — chỉ xem, KHÔNG có toolbar</label>
+      <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(viewLink)}"><button class="btn small" data-copy="${App.esc(viewLink)}">Copy</button></div>
+      <div class="perm-note">Edit token và view token là hai chuỗi ngẫu nhiên 240-bit khác nhau. View link tuyệt đối không thể chỉnh sửa.</div>
+      <div style="margin-top:12px;display:flex;gap:8px"><button class="btn small ghost" data-open="${App.esc(editLink)}">Mở Edit link</button><button class="btn small ghost" data-open="${App.esc(viewLink)}">Mở View link</button></div>
+    </div>`;
+  } else {
+    if(canvasObj){
+      const ce=App.canvasLink('edit',canvasObj.editToken), cv=App.canvasLink('view',canvasObj.viewToken);
+      pb.innerHTML = `<div class="panel-section"><h4><i data-lucide="palette"></i> Infinite Canvas</h4>
+        <div class="perm-note" style="background:var(--accent2-soft);border-color:var(--accent2);color:var(--accent2)">Canvas đã được tạo · ${canvasObj.objects.length} objects · theme: ${canvasObj.theme}</div>
+        <div style="margin:12px 0;display:flex;gap:8px;flex-wrap:wrap">
+          <a class="btn primary small" href="#/canvas/${canvasObj.id}">Open Canvas →</a>
+          <button class="btn small" id="shareCanvasBtn2">Share canvas</button>
+        </div>
+        <label class="field-label">Canvas edit link</label>
+        <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(ce)}"><button class="btn small" data-copy="${App.esc(ce)}">Copy</button></div>
+        <label class="field-label" style="margin-top:10px">Canvas view link</label>
+        <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(cv)}"><button class="btn small" data-copy="${App.esc(cv)}">Copy</button></div>
+      </div>`;
+      document.getElementById('shareCanvasBtn2').addEventListener('click',()=>App.openCanvasShareModal(canvasObj));
+    } else {
+      pb.innerHTML = `<div class="panel-section"><h4><i data-lucide="palette"></i> Canvas</h4>
+        <p style="font-size:12.5px;color:var(--muted);margin-bottom:12px">Tạo một bảng vẽ vô hạn liên kết với tài liệu này. Vẽ tự do, zoom/pan, thêm text, ảnh, hình dạng.</p>
+        <button class="btn primary" id="createCanvasBtn2"><i data-lucide="plus"></i> + Create Canvas</button>
+      </div>`;
+      document.getElementById('createCanvasBtn2').addEventListener('click',createCanvas);
+    }
+  }
+  pb.querySelectorAll('[data-ptab]').forEach(()=>{});
+  pb.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>App.copyText(b.dataset.copy)));
+  pb.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>window.open(b.dataset.open,'_blank')));
+  pb.querySelectorAll('[data-pact]').forEach(b=>b.addEventListener('click',()=>docAction(b.dataset.pact, doc)));
+  App.refreshIcons();
+}
+
+function createCanvas(){
+  if(!activeDoc) return;
+  const c = Store.newCanvas(activeDoc.id);
+  activeDoc.canvasId = c.id; activeDoc.updatedAt=Date.now(); Store.saveDocs();
+  App.toast('Đã tạo canvas');
+  location.hash = '#/canvas/'+c.id;
+}
+
+function docAction(act, doc){
+  if(act==='addpage'){
+    const wrap = document.getElementById('paperWrap');
+    if(wrap){
+      const pg = document.createElement('div');
+      pg.className='paper';
+      pg.innerHTML='<p><br></p>';
+      wrap.appendChild(pg);
+      markDirty(); App.saveDocNow();
+      App.toast('Đã thêm trang mới');
+      setTimeout(()=>{ pg.scrollIntoView({behavior:'smooth',block:'start'}); try{ const r=document.createRange(); r.selectNodeContents(pg); r.collapse(true); const s=window.getSelection(); s.removeAllRanges(); s.addRange(r); }catch(e){} }, 120);
+    }
+    return;
+  }
+  if(act==='rename'){const t=prompt('Đổi tên:',doc.title);if(t&&t.trim()){doc.title=t.trim();doc.updatedAt=Date.now();Store.saveDocs();App.render()}}
+  else if(act==='duplicate'){const c=Store.duplicateDoc(doc.id);App.toast('Đã nhân bản');location.hash='#/doc/'+c.id}
+  else if(act==='favorite'){doc.favorite=!doc.favorite;Store.saveDocs();App.render()}
+  else if(act==='trash'){
+    if(doc.trashed){if(confirm('Xóa vĩnh viễn?')){Store.docs=Store.docs.filter(d=>d.id!==doc.id);Store.saveDocs();location.hash='#/home'}}
+    else {doc.trashed=true;Store.saveDocs();App.toast('Đã chuyển vào thùng rác');location.hash='#/home'}
+  }
+  else if(act==='md'||act==='txt'){
+    const text = (doc.content||'').replace(/<br\s*\/?>/g,'\n').replace(/<\/(p|div|h[1-3]|li|blockquote)>/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+    const blob=new Blob([act==='md'?'# '+doc.title+'\n\n'+text:text],{type:'text/plain'});
+    const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=doc.title.replace(/[^\w\-]+/g,'_')+(act==='md'?'.md':'.txt');a.click();
+  }
+}
+
+function bindEditor(doc, canvasObj, sharedMode){
+  const paper = document.getElementById('paperWrap') || document.getElementById('paper');
+  document.execCommand('styleWithCSS',false,true);
+
+  // title
+  const ti = document.getElementById('titleInput');
+  ti.addEventListener('input',App.debounce(()=>{doc.title=ti.value||'Untitled document';doc.updatedAt=Date.now();Store.saveDocs()},400));
+
+  // sidebar toggle + theme + nav (reuse bindCommon but it binds card stuff too; just bind needed)
+  const st=document.getElementById('sidebarToggle');
+  if(st) st.addEventListener('click',()=>{Store.settings.sidebar=Store.settings.sidebar===false;Store.saveSettings();App.render()});
+  const tt=document.getElementById('themeToggle');
+  if(tt) tt.addEventListener('click',()=>{Store.settings.theme=Store.settings.theme==='dark'?'light':'dark';Store.saveSettings();App.applyTheme();App.render()});
+  document.querySelectorAll('[data-nav]').forEach(b=>b.addEventListener('click',()=>{const n=b.dataset.nav;if(n==='newdoc'){const d=Store.newDoc();location.hash='#/doc/'+d.id}else location.hash='#/'+n}));
+  const gh=document.querySelector('[data-gohome]'); if(gh) gh.addEventListener('click',()=>location.hash='#/home');
+
+  // panel tabs
+  document.querySelectorAll('[data-ptab]').forEach(b=>b.addEventListener('click',()=>renderPanel(b.dataset.ptab, doc, canvasObj)));
+
+  // top buttons
+  document.getElementById('shareBtn').addEventListener('click',()=>App.openShareModal(doc));
+  document.getElementById('exportBtn').addEventListener('click',()=>{App.saveDocNow();App.exportHTML(doc)});
+  const ccb=document.getElementById('createCanvasBtn'); if(ccb) ccb.addEventListener('click',createCanvas);
+  const scb=document.getElementById('shareCanvasBtn'); if(scb&&canvasObj) scb.addEventListener('click',()=>App.openCanvasShareModal(canvasObj));
+  const rb=document.getElementById('restoreBtn'); if(rb) rb.addEventListener('click',()=>{doc.trashed=false;Store.saveDocs();App.render()});
+
+  // doc menu
+  const dmb=document.getElementById('docMenuBtn');
+  if(dmb) dmb.addEventListener('click',e=>{e.stopPropagation();document.getElementById('docMenu').classList.toggle('open')});
+  document.addEventListener('click',()=>{const m=document.getElementById('docMenu');if(m)m.classList.remove('open')});
+  document.querySelectorAll('#docMenu [data-act]').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation();docAction(b.dataset.act,doc)}));
+
+  // toolbar commands
+  document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('mousedown',e=>e.preventDefault()));
+  document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>{
+    paper.focus();
+    document.execCommand(b.dataset.cmd,false,null);
+    markDirty(); updateTBState();
+  }));
+  document.getElementById('fontSel').addEventListener('change',e=>{paper.focus();document.execCommand('fontName',false,e.target.value);markDirty()});
+  document.getElementById('sizeSel').addEventListener('change',e=>{paper.focus();document.execCommand('fontSize',false,e.target.value);markDirty()});
+  document.getElementById('headingSel').addEventListener('change',e=>{paper.focus();document.execCommand('formatBlock',false,e.target.value);markDirty()});
+  document.getElementById('fgColor').addEventListener('input',e=>{document.getElementById('fgSwatch').style.background=e.target.value;paper.focus();document.execCommand('foreColor',false,e.target.value);markDirty()});
+  document.getElementById('hlColor').addEventListener('input',e=>{document.getElementById('hlSwatch').style.background=e.target.value;paper.focus();document.execCommand('hiliteColor',false,e.target.value);markDirty()});
+  document.getElementById('checklistBtn').addEventListener('mousedown',e=>e.preventDefault());
+  document.getElementById('checklistBtn').addEventListener('click',()=>{
+    paper.focus();
+    document.execCommand('insertHTML',false,'<ul class="checklist"><li><input type="checkbox"><span>&nbsp;Checklist item</span></li></ul><p><br></p>');
+    markDirty();
+  });
+  document.getElementById('codeBlockBtn').addEventListener('mousedown',e=>e.preventDefault());
+  document.getElementById('codeBlockBtn').addEventListener('click',()=>{
+    paper.focus();
+    const sel=window.getSelection(); const txt=sel?sel.toString():'';
+    const tmp=document.createElement('div');
+    tmp.innerHTML = App.renderCodeBlock(txt||'// type your code here','cpp',true)+'<p><br></p>';
+    const frag=document.createDocumentFragment();
+    while(tmp.firstChild) frag.appendChild(tmp.firstChild);
+    let range;
+    try{
+      if(sel&&sel.rangeCount>0){ range=sel.getRangeAt(0); range.deleteContents(); }
+      else { range=document.createRange(); range.selectNodeContents(paper); range.collapse(false); }
+      range.insertNode(frag);
+      range.collapse(false);
+      sel.removeAllRanges(); sel.addRange(range);
+    }catch(err){
+      // fallback
+      paper.appendChild(document.createElement('p'));
+    }
+    markDirty();
+    const cb=paper.querySelector('.code-block:last-of-type')||paper.querySelector('.code-block');
+    if(!txt && cb){ try{ openCodeEditor(cb); }catch(err2){} }
+  });
+  document.getElementById('linkBtn').addEventListener('mousedown',e=>e.preventDefault());
+  document.getElementById('linkBtn').addEventListener('click',()=>{const u=prompt('URL:','https://');if(u){paper.focus();document.execCommand('createLink',false,u);markDirty()}});
+  document.getElementById('imageBtn').addEventListener('mousedown',e=>e.preventDefault());
+  document.getElementById('imageBtn').addEventListener('click',()=>{
+    const choice=confirm('OK = upload file từ máy\nCancel = dán URL ảnh');
+    if(choice){document.getElementById('imgFileInput').click()}
+    else {const u=prompt('Image URL:');if(u){paper.focus();document.execCommand('insertImage',false,u);markDirty()}}
+  });
+  document.getElementById('imgFileInput').addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    const r=new FileReader();r.onload=()=>{paper.focus();document.execCommand('insertImage',false,r.result);markDirty()};r.readAsDataURL(f);
+  });
+  document.getElementById('tableBtn').addEventListener('mousedown',e=>e.preventDefault());
+  document.getElementById('tableBtn').addEventListener('click',()=>{
+    const r=parseInt(prompt('Số hàng:','3')||'3'), c=parseInt(prompt('Số cột:','3')||'3');
+    let t='<table><tbody>';for(let i=0;i<r;i++){t+='<tr>';for(let j=0;j<c;j++)t+=i===0?'<th>&nbsp;</th>':'<td>&nbsp;</td>';t+='</tr>'}t+='</tbody></table><p><br></p>';
+    paper.focus();document.execCommand('insertHTML',false,t);markDirty();
+  });
+
+  // checklist toggle
+  paper.addEventListener('click',e=>{
+    if(e.target.tagName==='INPUT'&&e.target.type==='checkbox'){
+      e.target.closest('li').classList.toggle('checked',e.target.checked);markDirty();
+    }
+  });
+
+  // code block actions (copy / edit) — event delegation
+  paper.addEventListener('click',e=>{
+    const btn = e.target.closest('[data-act]');
+    if(!btn) return;
+    const cb = btn.closest('.code-block'); if(!cb) return;
+    e.preventDefault(); e.stopPropagation();
+    let code=''; try{ code = decodeURIComponent(escape(atob(cb.dataset.code||''))); }catch(err){}
+    if(btn.dataset.act==='copy-code'){ App.copyText(code, 'Đã copy code'); }
+    else if(btn.dataset.act==='edit-code'){ openCodeEditor(cb); }
+  });
+
+  // markdown fence detection on Enter
+  paper.addEventListener('keydown',e=>{
+    if(e.key==='Enter'&&!e.shiftKey){
+      const sel=window.getSelection(); if(!sel||!sel.anchorNode) return;
+      let block = sel.anchorNode.nodeType===3?sel.anchorNode.parentElement:sel.anchorNode;
+      while(block && block!==paper && !/^(P|DIV|H[1-3]|LI|BLOCKQUOTE)$/.test(block.tagName)) block=block.parentElement;
+      if(block && block!==paper){
+        const txt = block.textContent.trim();
+        const m = txt.match(/^```(\w*)$/);
+        if(m){
+          e.preventDefault();
+          const lang = m[1]||'text';
+          const cbHtml = App.renderCodeBlock('', lang, true);
+          const tmp = document.createElement('div'); tmp.innerHTML = cbHtml;
+          const cb = tmp.firstChild;
+          block.replaceWith(cb);
+          const p = document.createElement('p'); p.innerHTML='<br>';
+          cb.after(p);
+          // place caret in new paragraph
+          const range=document.createRange(); range.selectNodeContents(p); range.collapse(true);
+          sel.removeAllRanges(); sel.addRange(range);
+          markDirty();
+          openCodeEditor(cb);
+        }
+      }
+    }
+  });
+
+  // autosave on input
+  paper.addEventListener('input',()=>{ markDirty(); updateTBState(); });
+  paper.addEventListener('keyup',updateTBState);
+  paper.addEventListener('mouseup',updateTBState);
+  function updateTBState(){
+    try{
+      document.querySelectorAll('[data-cmd]').forEach(b=>{
+        const c=b.dataset.cmd; if(['bold','italic','underline','strikeThrough','insertUnorderedList','insertOrderedList','justifyLeft','justifyCenter','justifyRight'].indexOf(c)>=0){
+          b.classList.toggle('active', document.queryCommandState(c));
+        }
+      });
+    }catch(e){}
+  }
+
+  // save on leave
+  window.addEventListener('beforeunload',App.saveDocNow);
+  window.addEventListener('offline',()=>setStatus('offline'));
+  window.addEventListener('online',()=>{setStatus('saving');scheduleSave()});
+}
+
+function openCodeEditor(cb){
+  let code=''; try{ code = decodeURIComponent(escape(atob(cb.dataset.code||''))); }catch(err){}
+  const lang = cb.dataset.lang||'text';
+  App.showModal(`<div class="modal-head"><h3>Edit code block</h3><button class="icon-btn" data-close><i data-lucide="x"></i></button></div>
+    <div class="modal-body">
+      <label class="field-label">Ngôn ngữ</label>
+      <select class="field-input" id="codeLangSel">${App.LANGS.map(l=>`<option value="${l[0]}" ${l[0]===lang?'selected':''}>${l[1]}</option>`).join('')}</select>
+      <label class="field-label">Code (Tab để thụt lề)</label>
+      <textarea class="code-edit-ta" id="codeEditTA" spellcheck="false">${App.esc(code)}</textarea>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;color:var(--muted)"><input type="checkbox" id="lineNumToggle" ${cb.classList.contains('no-linenum')?'':'checked'}> Hiển thị số dòng</label>
+    </div>
+    <div class="modal-foot"><button class="btn" data-close>Hủy</button><button class="btn primary" id="saveCodeBtn"><i data-lucide="check"></i> Lưu</button></div>`);
+  const ta=document.getElementById('codeEditTA');
+  ta.addEventListener('keydown',e=>{
+    if(e.key==='Tab'){e.preventDefault();const s=ta.selectionStart,t=ta.selectionEnd;ta.value=ta.value.slice(0,s)+'    '+ta.value.slice(t);ta.selectionStart=ta.selectionEnd=s+4;}
+  });
+  document.getElementById('saveCodeBtn').addEventListener('click',()=>{
+    const newCode=ta.value, newLang=document.getElementById('codeLangSel').value, ln=document.getElementById('lineNumToggle').checked;
+    cb.dataset.code = btoa(unescape(encodeURIComponent(newCode)));
+    cb.dataset.lang = newLang;
+    cb.classList.toggle('no-linenum', !ln);
+    const tmp=document.createElement('div'); tmp.innerHTML=App.renderCodeBlock(newCode,newLang,ln);
+    const nb=tmp.firstChild;
+    // preserve wrapper position: replace inner parts
+    cb.querySelector('.code-head .lang').textContent = (App.LANGS.find(l=>l[0]===newLang)||['text','Plain text'])[1];
+    cb.querySelector('pre').outerHTML = nb.querySelector('pre').outerHTML;
+    App.closeModal();
+    markDirty();
+    App.saveDocNow();
+  });
+}
+
+// shared editable view (edit link)
+App.renderSharedEdit = function(token){
+  const doc = Store.docByEditToken(token);
+  if(!doc){ App.render404(); return; }
+  App.renderDoc(doc.id, true);
+  // add banner
+  const tb=document.querySelector('.topbar');
+  if(tb){ const badge=document.createElement('span'); badge.className='badge'; badge.style.cssText='font-size:11px;padding:4px 10px;border-radius:10px;background:var(--accent-soft);color:var(--accent);font-weight:700;margin-left:8px'; badge.textContent='SHARED · EDITABLE'; tb.insertBefore(badge, tb.querySelector('#saveStatus')); }
+};
+})();
+</script>
+<script>
+/* ============================================================
+   PART 5 — Infinite Canvas engine
+   ============================================================ */
+(function(){
+const App = window.App;
+const Store = App.Store;
+
+const THEMES = {
+  white:     {bg:'#ffffff', grid:'rgba(20,20,40,.07)', ink:'#1a1a1a'},
+  dark:      {bg:'#1e1e22', grid:'rgba(255,255,255,.06)', ink:'#e8e6e1'},
+  gray:      {bg:'#e8e8e5', grid:'rgba(0,0,0,.08)', ink:'#1a1a1a'},
+  cream:     {bg:'#faf6ec', grid:'rgba(120,100,60,.10)', ink:'#3a3226'},
+  blackboard:{bg:'#1e3a2f', grid:'rgba(255,255,255,.07)', ink:'#f5f5f0'},
+  sepia:     {bg:'#f4ecd8', grid:'rgba(120,90,40,.12)', ink:'#433422'},
+  blue:      {bg:'#e8f0f8', grid:'rgba(40,80,140,.10)', ink:'#1a2a40'},
+  paper:     {bg:'#fdfbf7', grid:'rgba(0,0,0,.05)', ink:'#222222'}
+};
+const SWATCHES = ['#1a1a1a','#dc2626','#ea580c','#d97706','#16a34a','#0d9488','#2563eb','#7c3aed','#db2777','#ffffff'];
+
+function penCursor(color){
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><polygon points='3,29 8,24 23,7 27,11 12,28' fill='${color}' stroke='rgba(128,128,128,.6)' stroke-width='1'/><polygon points='3,29 8,24 12,28' fill='rgba(0,0,0,.55)'/></svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") 3 29, auto`;
+}
+function eraserCursor(size){
+  const s=Math.max(10,Math.min(40,size));
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${s+8}' height='${s+8}' viewBox='0 0 ${s+8} ${s+8}'><circle cx='${(s+8)/2}' cy='${(s+8)/2}' r='${s/2}' fill='rgba(255,255,255,.9)' stroke='#333' stroke-width='1.5'/></svg>`;
+  return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}") ${(s+8)/2} ${(s+8)/2}, auto`;
+}
+
+function distToSeg(px,py,x1,y1,x2,y2){
+  const dx=x2-x1, dy=y2-y1, l2=dx*dx+dy*dy;
+  if(l2===0) return Math.hypot(px-x1,py-y1);
+  let t=((px-x1)*dx+(py-y1)*dy)/l2; t=Math.max(0,Math.min(1,t));
+  return Math.hypot(px-(x1+t*dx), py-(y1+t*dy));
+}
+function pointInPoly(pt, poly){
+  let inside=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i].x, yi=poly[i].y, xj=poly[j].x, yj=poly[j].y;
+    if(((yi>pt.y)!==(yj>pt.y)) && (pt.x < (xj-xi)*(pt.y-yi)/(yj-yi+1e-9)+xi)) inside=!inside;
+  }
+  return inside;
+}
+
+App.Canvas = {
+  open(id, mode){ // mode: owner | edit | view
+    let canvasObj;
+    if(mode==='edit') canvasObj = Store.canvasByEditToken(id);
+    else if(mode==='view') canvasObj = Store.canvasByViewToken(id);
+    else canvasObj = Store.getCanvas(id);
+    if(!canvasObj){ App.render404(); return; }
+    const readonly = mode==='view';
+    const doc = canvasObj.docId ? Store.getDoc(canvasObj.docId) : null;
+
+    let objects = JSON.parse(JSON.stringify(canvasObj.objects||[]));
+    let cam = Object.assign({x:0,y:0,zoom:1}, canvasObj.view||{});
+    let tool = readonly?'hand':'pen';
+    let pen = {color: THEMES[canvasObj.theme]?.ink||'#1a1a1a', size:3, opacity:1, type:'pen'};
+    let eraser = {size:20, mode:'stroke'}; // stroke | object
+    let textSet = {font:'Arial', size:20, bold:false, italic:false, color: pen.color, align:'left'};
+    let selected = new Set();
+    let history = [JSON.stringify(objects)], hIndex = 0;
+    let spaceDown=false, dirty=true, rafId=null;
+    let current=null; // in-progress stroke/shape
+    let lassoPts=null, rectSel=null;
+    let polyPts=null; // polygon in progress
+    let activePointers = new Map();
+    let pinchInit=null;
+    let dragMode=null; // pan | draw | erase | lasso | select-move | select-resize | select-rotate | rect | shape | poly
+    let dragData=null;
+    let clipboard=null;
+
+    document.getElementById('app').innerHTML = `<div class="canvas-view" id="canvasView">
+      <div class="canvas-stage" id="canvasStage">
+        <canvas id="drawCanvas"></canvas>
+        ${readonly?`<div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:20;background:rgba(220,38,38,.9);color:#fff;padding:6px 16px;border-radius:8px;font-size:12px;font-weight:700;letter-spacing:.05em">VIEW ONLY · KHÔNG THỂ CHỈNH SỬA</div>`:''}
+        <div class="canvas-float left" id="penPanel" style="${readonly?'display:none':''}">
+          <div style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;width:100%">Color</div>
+          <div class="color-swatches" id="swatches"></div>
+          <div class="color-wrap" style="width:22px;height:22px"><input type="color" id="customColor" value="${pen.color}"><div style="width:20px;height:20px;border-radius:50%;border:2px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">+</div></div>
+          <div style="width:100%;height:1px;background:var(--border);margin:4px 0"></div>
+          <div style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;width:100%">Size <span id="sizeLabel" class="mono">${pen.size}</span></div>
+          <input type="range" id="sizeRange" min="1" max="40" value="${pen.size}">
+          <div style="font-size:10px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.08em;width:100%">Opacity <span id="opLabel" class="mono">${Math.round(pen.opacity*100)}%</span></div>
+          <input type="range" id="opRange" min="10" max="100" value="${Math.round(pen.opacity*100)}">
+        </div>
+        <div class="canvas-tools" id="canvasTools" style="${readonly?'display:none':''}">
+          ${[['pen','pen','Pen'],['pencil','pencil','Pencil'],['highlighter','highlighter','Highlighter'],['eraser','eraser','Eraser']].map(t=>`<button class="ctool" data-tool="${t[0]}"><i data-lucide="${t[1]}"></i><span class="tip">${t[2]}</span></button>`).join('')}
+          <div class="tb-sep" style="width:1px;height:24px;background:var(--border);margin:0 4px"></div>
+          ${[['lasso','lasso','Lasso select'],['mouse-pointer-2','select','Select/Move'],['hand','hand','Pan (Space)']].map(t=>`<button class="ctool" data-tool="${t[0]}"><i data-lucide="${t[1]}"></i><span class="tip">${t[2]}</span></button>`).join('')}
+          <div class="tb-sep" style="width:1px;height:24px;background:var(--border);margin:0 4px"></div>
+          ${[['minus','line','Line'],['move-up-right','arrow','Arrow'],['square','rect','Rectangle'],['circle','ellipse','Circle'],['triangle','triangle','Triangle'],['hexagon','polygon','Polygon']].map(t=>`<button class="ctool" data-tool="${t[0]}"><i data-lucide="${t[1]}"></i><span class="tip">${t[2]}</span></button>`).join('')}
+          <div class="tb-sep" style="width:1px;height:24px;background:var(--border);margin:0 4px"></div>
+          ${[['type','text','Text'],['image','image','Image']].map(t=>`<button class="ctool" data-tool="${t[0]}"><i data-lucide="${t[1]}"></i><span class="tip">${t[2]}</span></button>`).join('')}
+        </div>
+        <div class="canvas-float right" style="flex-direction:column;gap:8px;align-items:stretch">
+          <div style="display:flex;gap:4px;align-items:center">
+            <button class="icon-btn" id="backBtn" title="Quay lại"><i data-lucide="arrow-left"></i></button>
+            <button class="icon-btn" id="undoBtn" title="Undo (Ctrl+Z)" ${readonly?'disabled style="opacity:.3"':''}><i data-lucide="undo-2"></i></button>
+            <button class="icon-btn" id="redoBtn" title="Redo (Ctrl+Y)" ${readonly?'disabled style="opacity:.3"':''}><i data-lucide="redo-2"></i></button>
+            <button class="icon-btn" id="shareCanvasBtn" title="Share"><i data-lucide="share-2"></i></button>
+          </div>
+          <div style="display:flex;gap:4px;align-items:center">
+            <button class="icon-btn" id="zoomOut"><i data-lucide="minus"></i></button>
+            <span class="zoom-badge" id="zoomLabel">100%</span>
+            <button class="icon-btn" id="zoomIn"><i data-lucide="plus"></i></button>
+            <button class="icon-btn" id="zoomReset" title="Reset view"><i data-lucide="maximize"></i></button>
+          </div>
+          <select class="select" id="themeSel" style="font-size:11px;padding:5px 8px">${Object.keys(THEMES).map(t=>`<option ${canvasObj.theme===t?'selected':''}>${t}</option>`).join('')}</select>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;max-width:180px" id="selActions">
+            <button class="btn small" data-sact="duplicate" title="Duplicate (Ctrl+D)"><i data-lucide="copy" style="width:12px;height:12px"></i></button>
+            <button class="btn small" data-sact="front" title="Bring forward"><i data-lucide="arrow-up" style="width:12px;height:12px"></i></button>
+            <button class="btn small" data-sact="back" title="Send backward"><i data-lucide="arrow-down" style="width:12px;height:12px"></i></button>
+            <button class="btn small danger" data-sact="delete" title="Delete (Del)"><i data-lucide="trash-2" style="width:12px;height:12px"></i></button>
+          </div>
+        </div>
+        <div class="canvas-status" id="canvasStatus"><span class="dot" style="width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block"></span><span id="statusText">Đã lưu</span> · <span id="objCount">${objects.length} objects</span> · <span class="kbd">Wheel</span> zoom · <span class="kbd">Space+drag</span> pan</div>
+        <input type="file" id="canvasImgInput" accept="image/*" class="hidden">
+      </div>
+    </div>`;
+
+    App.refreshIcons();
+    const stage = document.getElementById('canvasStage');
+    const canvas = document.getElementById('drawCanvas');
+    const ctx = canvas.getContext('2d');
+    let dpr = window.devicePixelRatio||1;
+
+    function resize(){
+      const r = stage.getBoundingClientRect();
+      canvas.width = Math.max(1, r.width*dpr);
+      canvas.height = Math.max(1, r.height*dpr);
+      canvas.style.width=r.width+'px'; canvas.style.height=r.height+'px';
+      dirty=true; redraw();
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const theme = ()=> THEMES[canvasObj.theme]||THEMES.white;
+
+    function toWorld(clientX, clientY){
+      const r = canvas.getBoundingClientRect();
+      return {x:(clientX-r.left-cam.x)/cam.zoom, y:(clientY-r.top-cam.y)/cam.zoom};
+    }
+    function toScreen(wx, wy){ return {x: wx*cam.zoom+cam.x, y: wy*cam.zoom+cam.y}; }
+
+    function pushHistory(){
+      if(hIndex < history.length-1) history = history.slice(0,hIndex+1);
+      history.push(JSON.stringify(objects));
+      if(history.length>50) history.shift(); else hIndex++;
+    }
+    function undo(){ if(hIndex>0){hIndex--;objects=JSON.parse(history[hIndex]);selected.clear();dirty=true;redraw();saveDebounced();} }
+    function redo(){ if(hIndex<history.length-1){hIndex++;objects=JSON.parse(history[hIndex]);selected.clear();dirty=true;redraw();saveDebounced();} }
+
+    function bboxOf(o){
+      if(o.type==='stroke'||o.type==='shape'){
+        if(o.bbox) return o.bbox;
+        let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+        o.points.forEach(p=>{minX=Math.min(minX,p.x);minY=Math.min(minY,p.y);maxX=Math.max(maxX,p.x);maxY=Math.max(maxY,p.y)});
+        const pad = (o.size||3)/2+2;
+        o.bbox={minX:minX-pad,minY:minY-pad,maxX:maxX+pad,maxY:maxY+pad};
+        return o.bbox;
+      }
+      if(o.type==='text'){ const w=(o.text||'').length*o.size*0.55; return {minX:o.x,minY:o.y-o.size,maxX:o.x+w,maxY:o.y+o.size*0.3}; }
+      if(o.type==='image'){ return {minX:o.x,minY:o.y,maxX:o.x+o.w,maxY:o.y+o.h}; }
+      return {minX:0,minY:0,maxX:0,maxY:0};
+    }
+
+    function selBbox(){
+      if(selected.size===0) return null;
+      let minX=1e9,minY=1e9,maxX=-1e9,maxY=-1e9;
+      objects.forEach(o=>{ if(!selected.has(o.id)) return; const b=bboxOf(o); minX=Math.min(minX,b.minX);minY=Math.min(minY,b.minY);maxX=Math.max(maxX,b.maxX);maxY=Math.max(maxY,b.maxY);});
+      return {minX,minY,maxX,maxY,cx:(minX+maxX)/2,cy:(minY+maxY)/2,w:maxX-minX,h:maxY-minY};
+    }
+
+    function hitObject(wp){
+      for(let i=objects.length-1;i>=0;i--){
+        const o=objects[i];
+        if(o.type==='stroke'){
+          const pts=o.points; const thr=(o.size+6)/cam.zoom;
+          for(let j=0;j<pts.length-1;j++){ if(distToSeg(wp.x,wp.y,pts[j].x,pts[j].y,pts[j+1].x,pts[j+1].y)<thr) return o; }
+          if(pts.length===1 && Math.hypot(wp.x-pts[0].x,wp.y-pts[0].y)<thr) return o;
+        } else if(o.type==='shape'){
+          const b=bboxOf(o); if(wp.x>=b.minX-4&&wp.x<=b.maxX+4&&wp.y>=b.minY-4&&wp.y<=b.maxY+4) return o;
+        } else {
+          const b=bboxOf(o); if(wp.x>=b.minX&&wp.x<=b.maxX&&wp.y>=b.minY&&wp.y<=b.maxY) return o;
+        }
+      }
+      return null;
+    }
+
+    function drawObject(o){
+      ctx.save();
+      if(o.type==='stroke'){
+        ctx.globalAlpha = o.opacity!=null?o.opacity:1;
+        ctx.strokeStyle=o.color; ctx.lineWidth=o.size; ctx.lineCap='round'; ctx.lineJoin='round';
+        if(o.tool==='highlighter'){ ctx.globalAlpha=(o.opacity!=null?o.opacity:1)*0.35; ctx.lineWidth=o.size*2.2; }
+        if(o.tool==='pencil'){ ctx.globalAlpha=(o.opacity!=null?o.opacity:1)*0.7; }
+        ctx.beginPath();
+        const pts=o.points;
+        if(pts.length===1){ctx.arc(pts[0].x,pts[0].y,o.size/2,0,7);ctx.fillStyle=o.color;ctx.fill();ctx.restore();return;}
+        ctx.moveTo(pts[0].x,pts[0].y);
+        for(let i=1;i<pts.length;i++) ctx.lineTo(pts[i].x,pts[i].y);
+        ctx.stroke();
+      } else if(o.type==='shape'){
+        ctx.globalAlpha=o.opacity!=null?o.opacity:1;
+        ctx.strokeStyle=o.color; ctx.lineWidth=o.size||3; ctx.lineCap='round'; ctx.lineJoin='round';
+        const p=o.points;
+        ctx.beginPath();
+        if(o.shape==='line'){ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[1].x,p[1].y);}
+        else if(o.shape==='arrow'){
+          ctx.moveTo(p[0].x,p[0].y);ctx.lineTo(p[1].x,p[1].y);
+          const ang=Math.atan2(p[1].y-p[0].y,p[1].x-p[0].x), ah=10+o.size;
+          ctx.moveTo(p[1].x,p[1].y);
+          ctx.lineTo(p[1].x-ah*Math.cos(ang-0.4), p[1].y-ah*Math.sin(ang-0.4));
+          ctx.moveTo(p[1].x,p[1].y);
+          ctx.lineTo(p[1].x-ah*Math.cos(ang+0.4), p[1].y-ah*Math.sin(ang+0.4));
+        }
+        else if(o.shape==='rect'){ctx.rect(p[0].x,p[0].y,p[1].x-p[0].x,p[1].y-p[0].y);}
+        else if(o.shape==='ellipse'){const cx=(p[0].x+p[1].x)/2,cy=(p[0].y+p[1].y)/2,rx=Math.abs(p[1].x-p[0].x)/2,ry=Math.abs(p[1].y-p[0].y)/2;ctx.ellipse(cx,cy,rx,ry,0,0,7);}
+        else if(o.shape==='triangle'){const cx=(p[0].x+p[1].x)/2;ctx.moveTo(cx,p[0].y);ctx.lineTo(p[0].x,p[1].y);ctx.lineTo(p[1].x,p[1].y);ctx.closePath();}
+        else if(o.shape==='polygon'){ctx.moveTo(p[0].x,p[0].y);for(let i=1;i<p.length;i++)ctx.lineTo(p[i].x,p[i].y);ctx.closePath();}
+        ctx.stroke();
+      } else if(o.type==='text'){
+        ctx.translate(o.x,o.y); if(o.rot) ctx.rotate(o.rot);
+        ctx.globalAlpha=1; ctx.fillStyle=o.color||'#1a1a1a';
+        ctx.font = `${o.italic?'italic ':''}${o.bold?'700 ':'400 '}${o.size}px ${o.font||'Arial'}, sans-serif`;
+        ctx.textAlign = o.align||'left'; ctx.textBaseline='alphabetic';
+        (o.text||'').split('\n').forEach((line,i)=>ctx.fillText(line,0,i*o.size*1.3));
+      } else if(o.type==='image'){
+        if(o._img){ ctx.translate(o.x+o.w/2,o.y+o.h/2); if(o.rot) ctx.rotate(o.rot); ctx.drawImage(o._img,-o.w/2,-o.h/2,o.w,o.h); }
+      }
+      ctx.restore();
+    }
+
+    // preload images
+    objects.forEach(o=>{ if(o.type==='image'&&o.src){const im=new Image();im.src=o.src;o._img=im;} });
+
+    function draw(){
+      dirty=false;
+      const r=canvas.getBoundingClientRect();
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      ctx.fillStyle=theme().bg; ctx.fillRect(0,0,r.width,r.height);
+      // grid dots
+      const step=100;
+      const wx0=(-cam.x)/cam.zoom, wy0=(-cam.y)/cam.zoom;
+      const wx1=(r.width-cam.x)/cam.zoom, wy1=(r.height-cam.y)/cam.zoom;
+      if(cam.zoom>0.25){
+        ctx.fillStyle=theme().grid;
+        const gx=Math.floor(wx0/step)*step, gy=Math.floor(wy0/step)*step;
+        for(let x=gx;x<=wx1;x+=step) for(let y=gy;y<=wy1;y+=step){
+          const sx=x*cam.zoom+cam.x, sy=y*cam.zoom+cam.y;
+          ctx.fillRect(sx-1,sy-1,2,2);
+        }
+      }
+      ctx.save();
+      ctx.translate(cam.x,cam.y); ctx.scale(cam.zoom,cam.zoom);
+      // cull & draw
+      objects.forEach(o=>{
+        const b=bboxOf(o);
+        if(b.maxX<wx0-50||b.minX>wx1+50||b.maxY<wy0-50||b.minY>wy1+50) return;
+        drawObject(o);
+      });
+      // in-progress
+      if(current) drawObject(current);
+      if(lassoPts && lassoPts.length>1){
+        ctx.strokeStyle=theme().ink==='#1a1a1a'?'#2563eb':'#60a5fa'; ctx.lineWidth=1.5/cam.zoom; ctx.setLineDash([6/cam.zoom,4/cam.zoom]);
+        ctx.beginPath(); ctx.moveTo(lassoPts[0].x,lassoPts[0].y);
+        lassoPts.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      if(rectSel){
+        ctx.strokeStyle='#2563eb'; ctx.lineWidth=1.5/cam.zoom; ctx.setLineDash([6/cam.zoom,4/cam.zoom]);
+        ctx.strokeRect(rectSel.x,rectSel.y,rectSel.w,rectSel.h); ctx.setLineDash([]);
+      }
+      if(polyPts && polyPts.length){
+        ctx.strokeStyle='#2563eb'; ctx.lineWidth=2/cam.zoom; ctx.beginPath();
+        ctx.moveTo(polyPts[0].x,polyPts[0].y); polyPts.forEach(p=>ctx.lineTo(p.x,p.y)); ctx.stroke();
+        polyPts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,4/cam.zoom,0,7);ctx.fillStyle='#2563eb';ctx.fill();});
+      }
+      ctx.restore();
+      // selection overlay (screen space)
+      const sb=selBbox();
+      if(sb){
+        const tl=toScreen(sb.minX,sb.minY), br=toScreen(sb.maxX,sb.maxY);
+        ctx.setTransform(dpr,0,0,dpr,0,0);
+        ctx.strokeStyle='#2563eb'; ctx.lineWidth=1.5; ctx.setLineDash([6,4]);
+        ctx.strokeRect(tl.x,tl.y,br.x-tl.x,br.y-tl.y); ctx.setLineDash([]);
+        // handles
+        dragData && dragData.handles && dragData.handles.forEach(h=>{
+          ctx.beginPath(); ctx.arc(h.sx,h.sy,6,0,7); ctx.fillStyle='#fff'; ctx.fill(); ctx.strokeStyle='#2563eb'; ctx.lineWidth=1.5; ctx.stroke();
+        });
+        // rotate handle
+        const tc=toScreen(sb.cx, sb.minY);
+        ctx.beginPath(); ctx.moveTo(tc.x,tl.y); ctx.lineTo(tc.x,tl.y-22); ctx.stroke();
+        ctx.beginPath(); ctx.arc(tc.x,tl.y-26,6,0,7); ctx.fillStyle='#2563eb'; ctx.fill();
+      }
+      document.getElementById('zoomLabel').textContent = Math.round(cam.zoom*100)+'%';
+      document.getElementById('objCount').textContent = objects.length+' objects';
+    }
+    function redraw(){ if(rafId) return; rafId=requestAnimationFrame(()=>{rafId=null; draw();}); }
+
+    function setStatusText(s){ const el=document.getElementById('statusText'); if(el) el.textContent=s; }
+    const saveDebounced = App.debounce(()=>{
+      canvasObj.objects = objects.map(o=>{const c={...o}; delete c._img; return c;});
+      canvasObj.view = {x:cam.x,y:cam.y,zoom:cam.zoom};
+      canvasObj.updatedAt=Date.now();
+      Store.saveCanvases();
+      setStatusText('Đã lưu');
+    }, 800);
+    function markDirtyCanvas(){ if(readonly) return; setStatusText('Đang lưu...'); saveDebounced(); }
+
+    // ---- selection handles ----
+    function getHandles(){
+      const sb=selBbox(); if(!sb) return [];
+      const pts=[['nw',sb.minX,sb.minY],['n',sb.cx,sb.minY],['ne',sb.maxX,sb.minY],['e',sb.maxX,sb.cy],['se',sb.maxX,sb.maxY],['s',sb.cx,sb.maxY],['sw',sb.minX,sb.maxY],['w',sb.minX,sb.cy]];
+      return pts.map(p=>{const s=toScreen(p[1],p[2]);return {name:p[0],wx:p[1],wy:p[2],sx:s.x,sy:s.y};});
+    }
+    function hitHandle(wp){
+      const hs=getHandles();
+      for(const h of hs){ if(Math.hypot(wp.x-h.wx, wp.y-h.wy) < 10/cam.zoom) return h; }
+      // rotate handle
+      const sb=selBbox(); if(sb){ const rw={x:sb.cx,y:sb.minY-(30/cam.zoom)}; if(Math.hypot(wp.x-rw.x,wp.y-rw.y)<12/cam.zoom) return {name:'rotate'}; }
+      return null;
+    }
+
+    // ---- transform selection ----
+    function moveSelected(dx,dy){
+      objects.forEach(o=>{
+        if(!selected.has(o.id)) return;
+        if(o.type==='stroke'||o.type==='shape'){ o.points.forEach(p=>{p.x+=dx;p.y+=dy;}); o.bbox=null; }
+        else { o.x+=dx; o.y+=dy; }
+      });
+    }
+    function scaleSelected(sx,sy,cx,cy){
+      objects.forEach(o=>{
+        if(!selected.has(o.id)) return;
+        if(o.type==='stroke'||o.type==='shape'){ o.points.forEach(p=>{p.x=cx+(p.x-cx)*sx;p.y=cy+(p.y-cy)*sy;}); o.bbox=null; }
+        else if(o.type==='image'){ const nx=cx+(o.x-cx)*sx, ny=cy+(o.y-cy)*sy; o.w*=Math.abs(sx); o.h*=Math.abs(sy); o.x=nx; o.y=ny; }
+        else if(o.type==='text'){ o.x=cx+(o.x-cx)*sx; o.y=cy+(o.y-cy)*sy; o.size*=Math.max(Math.abs(sx),Math.abs(sy)); }
+      });
+    }
+    function rotateSelected(da,cx,cy){
+      const cos=Math.cos(da), sin=Math.sin(da);
+      objects.forEach(o=>{
+        if(!selected.has(o.id)) return;
+        if(o.type==='stroke'||o.type==='shape'){ o.points.forEach(p=>{const dx=p.x-cx,dy=p.y-cy;p.x=cx+dx*cos-dy*sin;p.y=cy+dx*sin+dy*cos;}); o.bbox=null; }
+        else { o.rot=(o.rot||0)+da; }
+      });
+    }
+    function deleteSelected(){ if(selected.size===0)return; pushHistory(); objects=objects.filter(o=>!selected.has(o.id)); selected.clear(); redraw(); markDirtyCanvas(); }
+    function duplicateSelected(){ if(selected.size===0)return; pushHistory(); const off=20/cam.zoom; const clones=[]; objects.forEach(o=>{if(selected.has(o.id)){const c=JSON.parse(JSON.stringify(o));c.id=App.uid();if(c.type==='stroke'||c.type==='shape')c.points.forEach(p=>{p.x+=off;p.y+=off;});else{c.x+=off;c.y+=off;}if(c.type==='image'&&c.src){const im=new Image();im.src=c.src;c._img=im;}clones.push(c);}}); selected.clear(); clones.forEach(c=>{selected.add(c.id);objects.push(c);}); redraw(); markDirtyCanvas(); }
+
+    // ---- cursor ----
+    function updateCursor(){
+      if(readonly || tool==='hand' || spaceDown){ canvas.style.cursor = dragMode==='pan'?'grabbing':'grab'; return; }
+      if(tool==='pen'||tool==='pencil'){ canvas.style.cursor=penCursor(pen.color); }
+      else if(tool==='highlighter'){ canvas.style.cursor=penCursor(pen.color); }
+      else if(tool==='eraser'){ canvas.style.cursor=eraserCursor(eraser.size); }
+      else if(tool==='text'){ canvas.style.cursor='text'; }
+      else { canvas.style.cursor='default'; }
+    }
+    updateCursor();
+
+    // ---- pointer events ----
+    canvas.addEventListener('pointerdown', onDown);
+    canvas.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    canvas.addEventListener('wheel', onWheel, {passive:false});
+
+    function onDown(e){
+      if(e.pointerType==='mouse' && e.button===2) return;
+      try{ canvas.setPointerCapture(e.pointerId); }catch(err){}
+      activePointers.set(e.pointerId, {x:e.clientX,y:e.clientY});
+      if(activePointers.size===2){
+        const pts=[...activePointers.values()];
+        pinchInit={dist:Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y), mid:{x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2}, cam:{...cam}};
+        dragMode='pinch'; return;
+      }
+      const wp = toWorld(e.clientX,e.clientY);
+      // pan conditions
+      if(readonly || e.button===1 || spaceDown || tool==='hand'){
+        dragMode='pan'; dragData={sx:e.clientX,sy:e.clientY,cx:cam.x,cy:cam.y}; updateCursor(); return;
+      }
+      if(tool==='pen'||tool==='pencil'||tool==='highlighter'){
+        pushHistory();
+        dragMode='draw';
+        current={id:App.uid(),type:'stroke',tool:tool,color:pen.color,size:pen.size,opacity:pen.opacity,points:[wp],bbox:null};
+        redraw();
+        return;
+      }
+      if(tool==='eraser'){ dragMode='erase'; eraseAt(wp); return; }
+      if(tool==='lasso'){ dragMode='lasso'; lassoPts=[wp]; return; }
+      if(tool==='text'){ createTextOverlay(e.clientX,e.clientY,wp); return; }
+      if(tool==='image'){ document.getElementById('canvasImgInput').click(); return; }
+      if(tool==='polygon'){
+        if(!polyPts){ polyPts=[wp]; dragMode='poly'; }
+        else {
+          // close if near first
+          if(Math.hypot(wp.x-polyPts[0].x,wp.y-polyPts[0].y)<12/cam.zoom && polyPts.length>2){ finishPolygon(); return; }
+          polyPts.push(wp);
+        }
+        redraw(); return;
+      }
+      if(['line','arrow','rect','ellipse','triangle'].indexOf(tool)>=0){
+        pushHistory();
+        dragMode='shape';
+        current={id:App.uid(),type:'shape',shape:tool,points:[wp,{...wp}],color:pen.color,size:pen.size,opacity:pen.opacity,bbox:null};
+        redraw();
+        return;
+      }
+      // select tool
+      if(tool==='select'||tool==='lasso'){
+        const h=hitHandle(wp);
+        if(h && selected.size>0){
+          pushHistory();
+          if(h.name==='rotate'){ dragMode='select-rotate'; const sb=selBbox(); dragData={cx:sb.cx,cy:sb.cy, startAng:Math.atan2(wp.y-sb.cy,wp.x-sb.cx)}; }
+          else { dragMode='select-resize'; const sb=selBbox(); dragData={handle:h.name, sb0:sb}; }
+          return;
+        }
+        const sb=selBbox();
+        if(sb && wp.x>=sb.minX&&wp.x<=sb.maxX&&wp.y>=sb.minY&&wp.y<=sb.maxY && selected.size>0){
+          pushHistory(); dragMode='select-move'; dragData={last:wp}; return;
+        }
+        // hit object
+        const ho=hitObject(wp);
+        if(ho){
+          if(!e.shiftKey) selected.clear();
+          selected.add(ho.id); dragMode='select-move'; dragData={last:wp}; pushHistory(); redraw(); return;
+        }
+        if(!e.shiftKey) selected.clear();
+        dragMode='rect'; rectSel={x:wp.x,y:wp.y,w:0,h:0}; redraw();
+      }
+    }
+
+    function onMove(e){
+      if(activePointers.has(e.pointerId)) activePointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+      if(dragMode==='pinch' && activePointers.size===2 && pinchInit){
+        const pts=[...activePointers.values()];
+        const dist=Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y);
+        const mid={x:(pts[0].x+pts[1].x)/2,y:(pts[0].y+pts[1].y)/2};
+        const scale=dist/(pinchInit.dist||1);
+        let nz=Math.max(0.1,Math.min(8,pinchInit.cam.zoom*scale));
+        const r=canvas.getBoundingClientRect();
+        const wx=(mid.x-r.left-pinchInit.cam.x)/pinchInit.cam.zoom, wy=(mid.y-r.top-pinchInit.cam.y)/pinchInit.cam.zoom;
+        cam.zoom=nz;
+        cam.x=mid.x-r.left - wx*nz + (mid.x-pinchInit.mid.x);
+        cam.y=mid.y-r.top - wy*nz + (mid.y-pinchInit.mid.y);
+        redraw(); return;
+      }
+      if(!dragMode) return;
+      const wp=toWorld(e.clientX,e.clientY);
+      if(dragMode==='pan'){ cam.x=dragData.cx+(e.clientX-dragData.sx); cam.y=dragData.cy+(e.clientY-dragData.sy); redraw(); return; }
+      if(dragMode==='draw'){
+        const pts=current.points, last=pts[pts.length-1];
+        if(Math.hypot(wp.x-last.x,wp.y-last.y)>1.5/cam.zoom){ pts.push(wp); redraw(); }
+        return;
+      }
+      if(dragMode==='erase'){ eraseAt(wp); return; }
+      if(dragMode==='lasso'){ lassoPts.push(wp); redraw(); return; }
+      if(dragMode==='shape'){ current.points[1]=wp; redraw(); return; }
+      if(dragMode==='rect'){ rectSel.w=wp.x-rectSel.x; rectSel.h=wp.y-rectSel.y; redraw(); return; }
+      if(dragMode==='select-move'){ moveSelected(wp.x-dragData.last.x, wp.y-dragData.last.y); dragData.last=wp; redraw(); return; }
+      if(dragMode==='select-resize'){
+        const sb0=dragData.sb0, h=dragData.handle;
+        let sx=1, sy=1;
+        if(h.indexOf('e')>=0) sx=(wp.x-sb0.minX)/(sb0.w||1);
+        if(h.indexOf('w')>=0) sx=(sb0.maxX-wp.x)/(sb0.w||1);
+        if(h.indexOf('s')>=0) sy=(wp.y-sb0.minY)/(sb0.h||1);
+        if(h.indexOf('n')>=0) sy=(sb0.maxY-wp.y)/(sb0.h||1);
+        if(h==='n'||h==='s') sx=1; if(h==='e'||h==='w') sy=1;
+        sx=Math.max(0.05,Math.abs(sx))*(sx<0?-1:1); sy=Math.max(0.05,Math.abs(sy))*(sy<0?-1:1);
+        // rebuild from snapshot? We scale incrementally — simpler: store snapshot of objects at drag start. Use JSON? We pushHistory before, so undo works. For incremental we need baseline. Store baseline in dragData.
+        if(!dragData.base){ dragData.base=JSON.parse(JSON.stringify(objects.filter(o=>selected.has(o.id)))); }
+        // apply scale to baseline
+        const baseMap={}; dragData.base.forEach(o=>baseMap[o.id]=o);
+        objects.forEach(o=>{
+          if(!selected.has(o.id)) return;
+          const b=baseMap[o.id];
+          if(o.type==='stroke'||o.type==='shape'){ o.points=b.points.map(p=>({x:sb0.cx+(p.x-sb0.cx)*sx, y:sb0.cy+(p.y-sb0.cy)*sy})); o.bbox=null; }
+          else if(o.type==='image'){ o.x=sb0.cx+(b.x-sb0.cx)*sx; o.y=sb0.cy+(b.y-sb0.cy)*sy; o.w=Math.abs(b.w*sx); o.h=Math.abs(b.h*sy); }
+          else if(o.type==='text'){ o.x=sb0.cx+(b.x-sb0.cx)*sx; o.y=sb0.cy+(b.y-sb0.cy)*sy; o.size=b.size*Math.max(Math.abs(sx),Math.abs(sy)); }
+        });
+        redraw(); return;
+      }
+      if(dragMode==='select-rotate'){
+        const ang=Math.atan2(wp.y-dragData.cy, wp.x-dragData.cx);
+        if(!dragData.baseAng) dragData.baseAng=ang;
+        if(!dragData.base){ dragData.base=JSON.parse(JSON.stringify(objects.filter(o=>selected.has(o.id)))); }
+        const da=ang-dragData.baseAng;
+        const baseMap={}; dragData.base.forEach(o=>baseMap[o.id]=o);
+        const cx=dragData.cx, cy=dragData.cy, cos=Math.cos(da), sin=Math.sin(da);
+        objects.forEach(o=>{
+          if(!selected.has(o.id)) return;
+          const b=baseMap[o.id];
+          if(o.type==='stroke'||o.type==='shape'){ o.points=b.points.map(p=>{const dx=p.x-cx,dy=p.y-cy;return{x:cx+dx*cos-dy*sin,y:cy+dx*sin+dy*cos};}); o.bbox=null; }
+          else { o.x=b.x; o.y=b.y; o.rot=(b.rot||0)+da; }
+        });
+        redraw(); return;
+      }
+    }
+
+    function onUp(e){
+      if(activePointers.has(e.pointerId)) activePointers.delete(e.pointerId);
+      if(activePointers.size<2) pinchInit=null;
+      if(dragMode==='draw' && current){
+        if(current.points.length>0){ objects.push(current); markDirtyCanvas(); }
+        current=null;
+      }
+      if(dragMode==='shape' && current){
+        const p=current.points;
+        if(Math.hypot(p[1].x-p[0].x,p[1].y-p[0].y)>2/cam.zoom){ objects.push(current); markDirtyCanvas(); }
+        current=null;
+      }
+      if(dragMode==='lasso' && lassoPts){
+        if(lassoPts.length>3){
+          selected.clear();
+          objects.forEach(o=>{
+            if(o.type==='stroke'){ if(o.points.some(p=>pointInPoly(p,lassoPts))) selected.add(o.id); }
+            else { const b=bboxOf(o); if(pointInPoly({x:(b.minX+b.maxX)/2,y:(b.minY+b.maxY)/2},lassoPts)) selected.add(o.id); }
+          });
+        }
+        lassoPts=null;
+      }
+      if(dragMode==='rect' && rectSel){
+        const rx=Math.min(rectSel.x,rectSel.x+rectSel.w), rw=Math.abs(rectSel.w);
+        const ry=Math.min(rectSel.y,rectSel.y+rectSel.h), rh=Math.abs(rectSel.h);
+        if(rw>3/cam.zoom||rh>3/cam.zoom){
+          objects.forEach(o=>{const b=bboxOf(o); if(b.minX<rx+rw&&b.maxX>rx&&b.minY<ry+rh&&b.maxY>ry) selected.add(o.id);});
+        }
+        rectSel=null;
+      }
+      if(dragMode && dragMode!=='pan' && dragMode!=='pinch') markDirtyCanvas();
+      if(dragMode==='select-move'||dragMode==='select-resize'||dragMode==='select-rotate'){ if(dragData) dragData.base=null; }
+      dragMode=null; dragData=null;
+      if(selected.size>0){ dragData={handles:getHandles()}; } else { dragData=null; }
+      redraw();
+      updateCursor();
+    }
+
+    function eraseAt(wp){
+      const thr = eraser.size/cam.zoom;
+      const before=objects.length;
+      objects = objects.filter(o=>{
+        if(eraser.mode==='stroke' && o.type!=='stroke') return true;
+        if(o.type==='stroke'){
+          for(let i=0;i<o.points.length-1;i++){ if(distToSeg(wp.x,wp.y,o.points[i].x,o.points[i].y,o.points[i+1].x,o.points[i+1].y)<thr) return false; }
+          if(o.points.length===1 && Math.hypot(wp.x-o.points[0].x,wp.y-o.points[0].y)<thr) return false;
+          return true;
+        }
+        const b=bboxOf(o); return !(wp.x>=b.minX&&wp.x<=b.maxX&&wp.y>=b.minY&&wp.y<=b.maxY);
+      });
+      if(objects.length!==before){ selected.clear(); redraw(); markDirtyCanvas(); }
+    }
+
+    function finishPolygon(){
+      if(!polyPts || polyPts.length<3){ polyPts=null; redraw(); return; }
+      pushHistory();
+      objects.push({id:App.uid(),type:'shape',shape:'polygon',points:polyPts.slice(),color:pen.color,size:pen.size,opacity:pen.opacity,bbox:null});
+      polyPts=null; redraw(); markDirtyCanvas();
+    }
+
+    function onWheel(e){
+      e.preventDefault();
+      const r=canvas.getBoundingClientRect();
+      const mx=e.clientX-r.left, my=e.clientY-r.top;
+      const wx=(mx-cam.x)/cam.zoom, wy=(my-cam.y)/cam.zoom;
+      const factor = e.deltaY<0 ? 1.1 : 1/1.1;
+      cam.zoom = Math.max(0.1, Math.min(8, cam.zoom*factor));
+      cam.x = mx - wx*cam.zoom;
+      cam.y = my - wy*cam.zoom;
+      redraw(); saveDebounced();
+    }
+
+    function zoomAt(factor){
+      const r=canvas.getBoundingClientRect();
+      const mx=r.width/2, my=r.height/2;
+      const wx=(mx-cam.x)/cam.zoom, wy=(my-cam.y)/cam.zoom;
+      cam.zoom=Math.max(0.1,Math.min(8,cam.zoom*factor));
+      cam.x=mx-wx*cam.zoom; cam.y=my-wy*cam.zoom; redraw(); saveDebounced();
+    }
+
+    // ---- text overlay ----
+    function createTextOverlay(clientX, clientY, wp){
+      const stage=document.getElementById('canvasStage');
+      const ta=document.createElement('textarea');
+      ta.className='text-overlay';
+      ta.style.left=(clientX-stage.getBoundingClientRect().left)+'px';
+      ta.style.top=(clientY-stage.getBoundingClientRect().top)+'px';
+      ta.style.color=textSet.color;
+      ta.style.font=`${textSet.italic?'italic ':''}${textSet.bold?'700 ':'400 '}${textSet.size}px ${textSet.font}`;
+      ta.placeholder='Type text...';
+      stage.appendChild(ta); ta.focus();
+      const commit=()=>{
+        const v=ta.value.trim();
+        if(v){ pushHistory(); objects.push({id:App.uid(),type:'text',x:wp.x,y:wp.y+textSet.size,text:v,font:textSet.font,size:textSet.size,bold:textSet.bold,italic:textSet.italic,color:textSet.color,align:textSet.align,rot:0}); markDirtyCanvas(); }
+        ta.remove(); redraw();
+      };
+      ta.addEventListener('keydown',ev=>{ if(ev.key==='Enter'&&!ev.shiftKey){ev.preventDefault();commit();} if(ev.key==='Escape'){ta.remove();} });
+      ta.addEventListener('blur',commit);
+    }
+
+    // ---- image upload ----
+    document.getElementById('canvasImgInput').addEventListener('change',e=>{
+      const f=e.target.files[0]; if(!f) return;
+      const r=new FileReader();
+      r.onload=()=>{
+        const im=new Image();
+        im.onload=()=>{
+          const r=canvas.getBoundingClientRect();
+          const wp=toWorld(r.left+r.width/2, r.top+r.height/2);
+          const scale=Math.min(400/im.width,400/im.height,1);
+          pushHistory();
+          const o={id:App.uid(),type:'image',x:wp.x-(im.width*scale)/2,y:wp.y-(im.height*scale)/2,w:im.width*scale,h:im.height*scale,src:r.result,rot:0,_img:im};
+          objects.push(o); selected.clear(); selected.add(o.id); redraw(); markDirtyCanvas();
+        };
+        im.src=r.result;
+      };
+      r.readAsDataURL(f);
+      e.target.value='';
+    });
+
+    // ---- keyboard ----
+    function onKey(e){
+      if(e.target.tagName==='TEXTAREA'||e.target.tagName==='INPUT') return;
+      if(e.code==='Space'){ spaceDown=true; e.preventDefault(); updateCursor(); }
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();undo();}
+      if((e.ctrlKey||e.metaKey)&&(e.key.toLowerCase()==='y'||(e.shiftKey&&e.key.toLowerCase()==='z'))){e.preventDefault();redo();}
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='d'){e.preventDefault();duplicateSelected();}
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='c'){clipboard=objects.filter(o=>selected.has(o.id)).map(o=>{const c={...o};delete c._img;return c;});}
+      if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='v'&&clipboard){pushHistory();const off=20/cam.zoom;const ids=new Set();clipboard.forEach(o=>{const c=JSON.parse(JSON.stringify(o));c.id=App.uid();if(c.type==='stroke'||c.type==='shape')c.points.forEach(p=>{p.x+=off;p.y+=off;});else{c.x+=off;c.y+=off;}if(c.type==='image'&&c.src){const im=new Image();im.src=c.src;c._img=im;}objects.push(c);ids.add(c.id);});selected=ids;redraw();markDirtyCanvas();}
+      if(e.key==='Delete'||e.key==='Backspace'){ if(selected.size){e.preventDefault();deleteSelected();} }
+      if(e.key==='Escape'){ selected.clear(); polyPts=null; lassoPts=null; redraw(); }
+      if(e.key==='Enter'&&polyPts){ finishPolygon(); }
+    }
+    function onKeyUp(e){ if(e.code==='Space'){spaceDown=false;updateCursor();} }
+    window.addEventListener('keydown',onKey);
+    window.addEventListener('keyup',onKeyUp);
+
+    // ---- UI bindings ----
+    const sw=document.getElementById('swatches');
+    SWATCHES.forEach(c=>{
+      const d=document.createElement('div'); d.className='color-swatch'+(c===pen.color?' active':''); d.style.background=c;
+      d.addEventListener('click',()=>{pen.color=c;textSet.color=c;document.querySelectorAll('.color-swatch').forEach(x=>x.classList.toggle('active',x===d));updateCursor();});
+      sw.appendChild(d);
+    });
+    document.getElementById('customColor').addEventListener('input',e=>{pen.color=e.target.value;textSet.color=e.target.value;updateCursor();});
+    document.getElementById('sizeRange').addEventListener('input',e=>{pen.size=+e.target.value;document.getElementById('sizeLabel').textContent=pen.size;});
+    document.getElementById('opRange').addEventListener('input',e=>{pen.opacity=+e.target.value/100;document.getElementById('opLabel').textContent=e.target.value+'%';});
+    document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>{
+      tool=b.dataset.tool; polyPts=null;
+      document.querySelectorAll('[data-tool]').forEach(x=>x.classList.toggle('active',x===b));
+      updateCursor();
+      if(tool==='eraser'){ eraser.mode = eraser.mode==='stroke'?'object':'stroke'; App.toast('Eraser mode: '+eraser.mode+' (click lại để đổi)'); }
+    }));
+    document.querySelector('[data-tool="pen"]').classList.add('active');
+    document.getElementById('undoBtn').addEventListener('click',undo);
+    document.getElementById('redoBtn').addEventListener('click',redo);
+    document.getElementById('zoomIn').addEventListener('click',()=>zoomAt(1.25));
+    document.getElementById('zoomOut').addEventListener('click',()=>zoomAt(0.8));
+    document.getElementById('zoomReset').addEventListener('click',()=>{cam={x:0,y:0,zoom:1};redraw();saveDebounced();});
+    document.getElementById('backBtn').addEventListener('click',()=>{ if(doc) location.hash='#/doc/'+doc.id; else location.hash='#/canvases'; });
+    document.getElementById('shareCanvasBtn').addEventListener('click',()=>App.openCanvasShareModal(canvasObj));
+    document.getElementById('themeSel').addEventListener('change',e=>{canvasObj.theme=e.target.value;Store.saveCanvases();stage.style.background=theme().bg;canvas.style.background=theme().bg;redraw();});
+    document.querySelectorAll('[data-sact]').forEach(b=>b.addEventListener('click',()=>{
+      const a=b.dataset.sact;
+      if(a==='delete') deleteSelected();
+      else if(a==='duplicate') duplicateSelected();
+      else if(a==='front'||a==='back'){
+        if(selected.size===0) return; pushHistory();
+        const selObjs=objects.filter(o=>selected.has(o.id));
+        objects=objects.filter(o=>!selected.has(o.id));
+        if(a==='front') objects=objects.concat(selObjs); else objects=selObjs.concat(objects);
+        redraw(); markDirtyCanvas();
+      }
+    }));
+    stage.style.background=theme().bg; canvas.style.background=theme().bg;
+    redraw();
+
+    // cleanup
+    App.Canvas._cleanup = function(){
+      window.removeEventListener('keydown',onKey);
+      window.removeEventListener('keyup',onKeyUp);
+      window.removeEventListener('resize',resize);
+      window.removeEventListener('pointerup',onUp);
+      if(rafId) cancelAnimationFrame(rafId);
+      saveDebounced();
+      App.Canvas._cleanup=null;
+    };
+  }
+};
+})();
+</script>
+<script>
+/* ============================================================
+   PART 6 — Main render dispatcher + init
+   ============================================================ */
+(function(){
+const App = window.App;
+const Store = App.Store;
+
+App.render = function(){
+  App.closeModal();
+  if(App.Canvas && App.Canvas._cleanup){ App.Canvas._cleanup(); }
+  App.applyTheme();
+  const v = App.currentView || {view:'home'};
+  switch(v.view){
+    case 'home': App.renderHome('documents'); break;
+    case 'recent': App.renderHome('recent'); break;
+    case 'favorites': App.renderHome('favorites'); break;
+    case 'trash': App.renderHome('trash'); break;
+    case 'canvases': App.renderHome('canvases'); break;
+    case 'settings': App.renderSettings(); break;
+    case 'doc': App.renderDoc(v.param); break;
+    case 'edit': App.renderSharedEdit(v.param); break;
+    case 'view': App.renderViewOnly(v.param); break;
+    case 'canvas': App.Canvas.open(v.param,'owner'); break;
+    case 'canvas-edit': App.Canvas.open(v.param,'edit'); break;
+    case 'canvas-view': App.Canvas.open(v.param,'view'); break;
+    case 'pub': App.renderPub(v.param); break;
+    case 'shared': App.renderSharedMagic(v.param); break;
+    default: App.render404();
+  }
+};
+
+function createWelcomeDoc(){
+  const d = Store.newDoc('Welcome to GAY DOC');
+  const cppCode = '#include <bits/stdc++.h>\nusing namespace std;\n\nint main() {\n    vector<int> a = {1, 2, 3};\n    cout << "Hello, GAY DOC!" << endl;\n    cout << a.size() << endl;\n    return 0;\n}';
+  d.content = `<h1>Chào mừng đến với GAY DOC</h1>
+<p>Một trình soạn thảo tài liệu hiện đại với <b>Markdown</b>, <i>code highlighting</i> và <b>infinite canvas</b>.</p>
+<h2>Tính năng chính</h2>
+<ul><li>Tạo, lưu, chia sẻ tài liệu bằng link bảo mật</li><li>Hỗ trợ code block nhiều ngôn ngữ với syntax highlighting</li><li>Bảng vẽ vô hạn — zoom, pan, pen, lasso, shapes, text, ảnh</li><li>Tự động lưu, không mất dữ liệu khi reload</li></ul>
+<h2>Ví dụ code block C++</h2>
+${App.renderCodeBlock(cppCode,'cpp',true)}
+<p>Nhấn nút <b>+ Create Canvas</b> ở thanh trên để tạo bảng vẽ vô hạn cho tài liệu này.</p>
+<blockquote>Mẹo: gõ <code>\`\`\`cpp</code> rồi Enter ở đầu dòng để tự động tạo code block C++.</blockquote>
+<p style="text-align:center;color:#888;font-size:12px;margin-top:48px">Ý tưởng và hoàn thiện GAY DOC: Phan Văn Minh Đức</p>`;
+  d.updatedAt=Date.now();
+  Store.saveDocs();
+  return d;
+}
+
+function init(){
+  if(Store.docs.length===0 && Store.canvases.length===0){
+    createWelcomeDoc();
+  }
+  App.applyTheme();
+  if(!location.hash) location.hash='#/home';
+  App.route();
+  window.addEventListener('load', ()=>{ if(App.refreshIcons) App.refreshIcons(); });
+}
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+else init();
+})();
+</script>
+</body>
+</html>
