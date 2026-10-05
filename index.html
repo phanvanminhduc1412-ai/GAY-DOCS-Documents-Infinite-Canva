@@ -828,29 +828,17 @@ App.renderSettings = function(){
 
 // ---------- Share modal ----------
 App.openShareModal = function(doc){
-  const editLink = App.docLink('edit',doc.editToken);
-  const viewLink = App.docLink('view',doc.viewToken);
   const isLocal = location.protocol === 'file:';
-  const magic = isLocal ? '' : App.magicLink(doc, 's');
-  const magicEdit = isLocal ? '' : App.magicLink(doc, 'e');
+  const magic = App.magicLink(doc, 's');
+  const magicEdit = App.magicLink(doc, 'e');
   showModal(`<div class="modal-head"><h3>Chia sẻ tài liệu</h3><button class="icon-btn" data-close><i data-lucide="x"></i></button></div>
     <div class="modal-body">
-      <div class="perm-note" style="background:var(--accent-soft);border:1px solid var(--accent);color:var(--accent);margin-bottom:12px"><b>Cách dễ nhất &amp; chắc chắn 100%:</b> bấm nút dưới để xuất file .html, rồi gửi file đó cho người khác (Zalo/Gmail/Drive). Họ mở lên xem được đầy đủ — không cần internet, không bị lỗi link.</div>
-      <button class="btn primary" id="exportForShare" style="width:100%;justify-content:center;margin-bottom:16px"><i data-lucide="download"></i> Xuất file .html để gửi cho người khác</button>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Hoặc dùng link (chỉ hoạt động khi file đã được đưa lên mạng, không phải file local):</p>
-      <div class="link-row"><span class="lbl edit">Edit</span><input readonly value="${App.esc(editLink)}"><button class="btn small" data-copy="${App.esc(editLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(editLink)}">Open</button></div>
-      <div class="link-row"><span class="lbl view">View</span><input readonly value="${App.esc(viewLink)}"><button class="btn small" data-copy="${App.esc(viewLink)}">Copy</button><button class="btn small ghost" data-open="${App.esc(viewLink)}">Open</button></div>
-      ${isLocal ? `
-      <div class="perm-note" style="background:var(--accent2-soft);border:1px solid var(--accent2);color:var(--accent2)"><b>Bạn đang mở file local (file://).</b> Link Edit/View/Magic sẽ KHÔNG mở được trên máy người khác vì đường dẫn trỏ vào máy bạn. Hãy dùng nút "Xuất file .html" ở trên, hoặc đưa file index.html lên mạng (Netlify Drop / GitHub Pages) rồi tạo link từ đó.</div>
-      ` : `
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Dùng Magic link để chia sẻ — ai bấm vào cũng xem/sửa được ngay, không cần tài khoản.</p>
       <div class="link-row"><span class="lbl edit">Magic View</span><input readonly value="${App.esc(magic)}"><button class="btn small" data-copy="${App.esc(magic)}">Copy</button><button class="btn small ghost" data-open="${App.esc(magic)}">Open</button></div>
       <div class="link-row"><span class="lbl edit">Magic Edit</span><input readonly value="${App.esc(magicEdit)}"><button class="btn small" data-copy="${App.esc(magicEdit)}">Copy</button><button class="btn small ghost" data-open="${App.esc(magicEdit)}">Open</button></div>
-      <div class="perm-note"><b>Magic View:</b> ai bấm vào cũng xem được ngay. <b>Magic Edit:</b> ai bấm vào cũng mở ra chỉnh sửa (tự động tạo bản copy trong tài liệu của họ) — y hệt ideone. Lưu ý: link rất dài, nếu gửi qua Zalo/Messenger bị cắt thì dùng file .html ở trên.</div>
-      `}
+      ${isLocal ? `<div class="perm-note" style="background:var(--accent2-soft);border:1px solid var(--accent2);color:var(--accent2);margin-top:12px"><b>Đang mở file local.</b> Magic link chỉ hoạt động khi file đã được đưa lên mạng (ví dụ: main.gaydocs.gt.tt).</div>` : ''}
     </div>
     <div class="modal-foot"><button class="btn" data-close>Đóng</button></div>`);
-  const eb = document.getElementById('exportForShare');
-  if(eb) eb.addEventListener('click', ()=>{ App.closeModal(); App.saveDocNow(); App.exportHTML(doc); });
 };
 App.openCanvasShareModal = function(c){
   const editLink = App.canvasLink('edit',c.editToken);
